@@ -1,0 +1,8 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+.idea
+/fugdj-api.sln.DotSettings.user
+appsettings.Development.json
