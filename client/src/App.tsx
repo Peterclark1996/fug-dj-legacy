@@ -1,10 +1,13 @@
-import './App.css'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import Main from './Screens/Main'
+
+const queryClient = new QueryClient()
 
 const App = () => {
     return (
-        <div className="App">
-            Fug DJ
-        </div>
+        <QueryClientProvider client={queryClient}>
+            <Main />
+        </QueryClientProvider>
     )
 }
 

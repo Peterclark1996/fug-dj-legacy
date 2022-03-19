@@ -1,0 +1,15 @@
+.fullscreen {
+    min-width: 100vw;
+    max-width: 100vw;
+    min-height: 100vh;
+    max-height: 100vh;
+}
+
+.background {
+    background-color: #282c34;
+}
+
+.mainFont {
+    font-size: calc(10px + 2vmin);
+    color: white;
+}

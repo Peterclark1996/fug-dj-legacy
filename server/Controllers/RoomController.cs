@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace fugdj.Controllers;
 
 [ApiController]
-[Route("api/[controller]/[action]")]
+[Route("api/rooms/[action]")]
 public class RoomController : ControllerBase
 {
     private readonly IRoomService _roomService;
