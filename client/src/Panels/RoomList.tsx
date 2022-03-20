@@ -15,17 +15,11 @@ const RoomList = () => {
 
     const [selectedRoom, setSelectedRoom] = useState('')
 
-    if (error) {
-        return (
-            <div>Error getting rooms</div>
-        )
-    }
-
     return (
-        <div className={`d-flex flex-column p-1 ${classes.background} ${classes.shadow}`}>
-            <Loading isLoading={isLoading} >
+        <div className={`d-flex flex-column flex-grow-1 p-1 ${classes.background} ${classes.shadow}`}>
+            <Loading isLoading={isLoading && !error} >
                 {
-                    !rooms ?
+                    !rooms || error ?
                         <div>No rooms found</div> :
                         rooms.map(room => <RoomButton key={room.id} roomName={room.name} selected={room.name === selectedRoom} onClick={() => setSelectedRoom(room.name)} />)
                 }
