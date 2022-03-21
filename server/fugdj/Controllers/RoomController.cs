@@ -1,5 +1,4 @@
-﻿using fugdj.Dtos.Http;
-using fugdj.Services;
+﻿using fugdj.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace fugdj.Controllers;
@@ -16,14 +15,14 @@ public class RoomController : ControllerBase
     }
         
     [HttpGet]
-    public IEnumerable<RoomNameHttpDto> GetAll()
+    public IActionResult GetAll()
     {
-        return _roomService.GetAllRooms();
+        return Ok(_roomService.GetAllRooms());
     }
         
     [HttpGet]
-    public RoomNameHttpDto Get([FromQuery] string roomId)
+    public IActionResult Get([FromQuery] string roomId)
     {
-        return _roomService.GetRoomData(Guid.Parse(roomId));
+        return Ok(_roomService.GetRoomData(Guid.Parse(roomId)));
     }
 }

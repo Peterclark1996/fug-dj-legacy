@@ -1,3 +1,5 @@
+using fugdj;
+using fugdj.Integration;
 using fugdj.Repositories;
 using fugdj.Services;
 
@@ -6,11 +8,14 @@ const string corsDomainPolicy = "CorsDomainPolicy";
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddControllers(options => options.Filters.Add(new HttpExceptionFilter()));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+
+builder.Services.AddScoped<IDataSourceClient, DataSourceClient>();
 
 builder.Services.AddCors(options =>
 {

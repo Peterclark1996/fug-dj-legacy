@@ -24,6 +24,11 @@ public class RoomService : IRoomService
     public RoomNameHttpDto GetRoomData(Guid roomId)
     {
         var room = _roomRepository.GetRoomData(roomId);
+        if (room == null)
+        {
+            throw new ResourceNotFoundException("Room with given id does not exist");
+        }
+        
         return new RoomNameHttpDto(Guid.Parse(room.Id), room.Name);
     }
 }
