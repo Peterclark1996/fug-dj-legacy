@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import Loading from './Components/Loading'
 import LoginScreen from './Screens/LoginScreen'
 import MainScreen from './Screens/MainScreen'
+import { ApiProvider } from './Hooks/ApiProvider'
 
 const queryClient = new QueryClient()
 
@@ -11,9 +12,11 @@ const App = () => {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <Loading isLoading={isLoading}>
-                {isAuthenticated ? <MainScreen /> : <LoginScreen />}
-            </ Loading>
+            <ApiProvider>
+                <Loading isLoading={isLoading}>
+                    {isAuthenticated ? <MainScreen /> : <LoginScreen />}
+                </ Loading>
+            </ApiProvider>
         </QueryClientProvider>
     )
 }

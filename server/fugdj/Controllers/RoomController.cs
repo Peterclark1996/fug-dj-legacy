@@ -1,4 +1,5 @@
 ﻿using fugdj.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace fugdj.Controllers;
@@ -13,14 +14,16 @@ public class RoomController : ControllerBase
     {
         _roomService = roomService;
     }
-        
+    
     [HttpGet]
+    [Authorize]
     public IActionResult GetAll()
     {
         return Ok(_roomService.GetAllRooms());
     }
         
     [HttpGet]
+    [Authorize]
     public IActionResult Get([FromQuery] string roomId)
     {
         return Ok(_roomService.GetRoomData(Guid.Parse(roomId)));

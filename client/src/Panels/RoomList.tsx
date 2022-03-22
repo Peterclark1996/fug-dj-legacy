@@ -1,8 +1,8 @@
-import axios from 'axios'
 import { useState } from 'react'
 import { useQuery } from 'react-query'
 import Loading from '../Components/Loading'
 import RoomButton from '../Components/RoomButton'
+import { useApi } from '../Hooks/ApiProvider'
 import classes from './RoomList.module.scss'
 
 type Room = {
@@ -11,7 +11,9 @@ type Room = {
 }
 
 const RoomList = () => {
-    const { isLoading, error, data: rooms } = useQuery<Room[], Error>("rooms", () => axios.get("https://localhost:7177/api/rooms/getall").then((res) => res.data))
+    const { apiGet } = useApi()
+
+    const { isLoading, error, data: rooms } = useQuery<Room[], Error>("rooms", () => apiGet("rooms/getall"))
 
     const [selectedRoom, setSelectedRoom] = useState('')
 
