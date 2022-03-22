@@ -4,17 +4,25 @@ import Loading from './Components/Loading'
 import LoginScreen from './Screens/LoginScreen'
 import MainScreen from './Screens/MainScreen'
 import { ApiProvider } from './Hooks/ApiProvider'
+import { useReducer } from 'react'
+import Reducer from './Reducer/Reducer'
+import Page from './Enums/Page'
 
 const queryClient = new QueryClient()
 
 const App = () => {
-    const { user, isAuthenticated, isLoading } = useAuth0()
+    const { isAuthenticated, isLoading } = useAuth0()
+
+    const [state, dispatch] = useReducer(Reducer, {
+        selectedPage: Page.Home,
+        userData: null
+    })
 
     return (
         <QueryClientProvider client={queryClient}>
             <ApiProvider>
                 <Loading isLoading={isLoading}>
-                    {isAuthenticated ? <MainScreen /> : <LoginScreen />}
+                    {isAuthenticated ? <MainScreen state={state} dispatch={dispatch} /> : <LoginScreen />}
                 </ Loading>
             </ApiProvider>
         </QueryClientProvider>

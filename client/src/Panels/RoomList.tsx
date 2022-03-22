@@ -3,17 +3,12 @@ import { useQuery } from 'react-query'
 import Loading from '../Components/Loading'
 import RoomButton from '../Components/RoomButton'
 import { useApi } from '../Hooks/ApiProvider'
+import RoomData from '../Types/RoomData'
 import classes from './RoomList.module.scss'
-
-type Room = {
-    id: string,
-    name: string,
-}
 
 const RoomList = () => {
     const { apiGet } = useApi()
-
-    const { isLoading, error, data: rooms } = useQuery<Room[], Error>("rooms", () => apiGet("rooms/getall"))
+    const { isLoading, error, data: rooms } = useQuery<RoomData[], Error>("rooms", () => apiGet("rooms/getall"))
 
     const [selectedRoom, setSelectedRoom] = useState('')
 

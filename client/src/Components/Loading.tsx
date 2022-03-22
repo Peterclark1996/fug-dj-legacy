@@ -1,5 +1,3 @@
-import { FunctionComponent } from "react"
-
 type LoadingProps = {
     isLoading: boolean
     children: React.ReactNode

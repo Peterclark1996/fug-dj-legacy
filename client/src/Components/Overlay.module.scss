@@ -1,0 +1,18 @@
+.overlayBackground {
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+}
+  
+.overlay {
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 2%;
+    max-width: 90vw;
+    min-width: 90vw;
+    max-height: 90%;
+    min-height: 90%;
+    -moz-box-shadow: 0 0 20px #000000;
+    -webkit-box-shadow: 0 0 20px #000000;
+    box-shadow: 0 0 20px #000000;
+    background-color: #282c34;
+}

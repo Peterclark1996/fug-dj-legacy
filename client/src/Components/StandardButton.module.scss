@@ -1,3 +1,11 @@
+.buttonColour {
+    background-color: rgb(103, 164, 255);
+}
+
+.buttonColour:hover {
+    background-color: rgb(85, 136, 211);
+}
+
 .toolTip {
     position: relative;
 }
@@ -12,4 +20,11 @@
   
 .toolTip:hover .toolTipText {
     visibility: visible;
+}
+
+.fixedSize {
+    max-width: 50px;
+    min-width: 50px;
+    max-height: 50px;
+    min-height: 50px;
 }
