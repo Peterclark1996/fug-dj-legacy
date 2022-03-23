@@ -6,7 +6,7 @@ import MainScreen from './Screens/MainScreen'
 import { ApiProvider } from './Hooks/ApiProvider'
 import { useReducer } from 'react'
 import Reducer from './Reducer/Reducer'
-import Page from './Enums/Page'
+import PageEnum from './Enums/PageEnum'
 
 const queryClient = new QueryClient()
 
@@ -14,7 +14,7 @@ const App = () => {
     const { isAuthenticated, isLoading } = useAuth0()
 
     const [state, dispatch] = useReducer(Reducer, {
-        selectedPage: Page.Home,
+        selectedPage: PageEnum.Home,
         userData: null
     })
 

@@ -5,7 +5,7 @@ import RoomList from '../Panels/RoomList'
 import classes from './Screen.module.scss'
 import Stage from '../Panels/Stage'
 import UserActions from '../Panels/UserActions'
-import Page from '../Enums/Page'
+import PageEnum from '../Enums/PageEnum'
 import MediaLibraryScreen from './MediaLibraryScreen'
 import { useQuery } from 'react-query'
 import { useApi } from '../Hooks/ApiProvider'
@@ -39,7 +39,7 @@ const MainScreen = ({ state, dispatch }: MainScreenProps) => {
                 <Stage />
             </div>
             {
-                state.selectedPage === Page.Library && <MediaLibraryScreen state={state} dispatch={dispatch} />
+                state.selectedPage === PageEnum.Library && <MediaLibraryScreen state={state} dispatch={dispatch} />
             }
         </div>
     )

@@ -1,4 +1,4 @@
-import Page from "../Enums/Page"
+import PageEnum from "../Enums/PageEnum"
 import UserData from "../Types/UserData"
 
 export enum ActionType {
@@ -7,7 +7,7 @@ export enum ActionType {
 }
 
 type Action =
-    | { type: ActionType.SELECTED_PAGE_UPDATED, updatedPage: Page }
+    | { type: ActionType.SELECTED_PAGE_UPDATED, updatedPage: PageEnum }
     | { type: ActionType.USER_DATA_RETRIEVED, userData: UserData }
 
 export default Action

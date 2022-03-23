@@ -1,8 +1,10 @@
-import Media from "./Media"
+import MediaData from "./MediaData"
+import TagData from "./TagData"
 
 type UserData = {
     name: string,
-    media: Array<Media>
+    media: MediaData[],
+    tags: TagData[]
 }
 
 export default UserData

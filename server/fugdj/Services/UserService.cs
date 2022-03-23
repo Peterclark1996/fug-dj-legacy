@@ -25,7 +25,15 @@ public class UserService : IUserService
         {
             throw new ResourceNotFoundException("Your user does not exist");
         }
-        
-        return new UserHttpDto(user.Name, new List<TagHttpDto>(), user.MediaList.Select(m => new MediaHttpDto(m.Media.Name)).ToList());
+
+        var userTags = user.TagList.Select(t => 
+            new TagHttpDto(t.Id, t.Name, t.ColourHex)
+        ).ToList();
+
+        var userMedia = user.MediaList.Select(m => 
+            new MediaHttpDto(m.Media.Name, Player.Youtube, m.Media.HashCode[1..], m.TagIds)
+        ).ToList();
+
+        return new UserHttpDto(user.Name, userTags, userMedia);
     }
 }

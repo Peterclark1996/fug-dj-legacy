@@ -1,8 +1,8 @@
-import Page from "../Enums/Page"
+import PageEnum from "../Enums/PageEnum"
 import UserData from "../Types/UserData"
 
 type AppState = {
-    selectedPage: Page,
+    selectedPage: PageEnum,
     userData: UserData | null
 }
 

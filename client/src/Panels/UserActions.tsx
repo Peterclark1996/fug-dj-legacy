@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react"
 import StandardButton from "../Components/StandardButton"
-import Page from "../Enums/Page"
+import PageEnum from "../Enums/PageEnum"
 import Action, { ActionType } from "../Reducer/Action"
 import AppState from "../Reducer/AppState"
 import classes from './UserActions.module.scss'
@@ -12,7 +12,7 @@ type UserActionsProps = {
 
 const UserActions = ({ state, dispatch }: UserActionsProps) => {
     const { user, logout } = useAuth0()
-    const onLibraryClick = () => dispatch({ type: ActionType.SELECTED_PAGE_UPDATED, updatedPage: Page.Library })
+    const onLibraryClick = () => dispatch({ type: ActionType.SELECTED_PAGE_UPDATED, updatedPage: PageEnum.Library })
 
     return (
         <div className={`d-flex flex-column justify-content-center p-2 ${classes.background} ${classes.shadow}`}>
