@@ -25,26 +25,21 @@ public class RoomRepository : IRoomRepository
         
     public IEnumerable<RoomDbDto> GetAllRooms()
     {
-        var collection = _dataSourceClient.GetCollection(RoomCollectionName);
+        var collection = _dataSourceClient.GetCollection<RoomDbDto>(RoomCollectionName);
 
         var rooms = collection
-            .Find(Builders<BsonDocument>.Filter.Empty)
-            .ToList()
-            .Select(doc => BsonSerializer.Deserialize<RoomDbDto>(doc));
+            .Find(Builders<RoomDbDto>.Filter.Empty)
+            .ToList();
 
         return rooms ?? throw new NullReferenceException();
     }
 
     public RoomDbDto? GetRoomData(Guid roomId)
     {
-        var collection = _dataSourceClient.GetCollection(RoomCollectionName);
+        var collection = _dataSourceClient.GetCollection<RoomDbDto>(RoomCollectionName);
 
-        var filter = Builders<BsonDocument>.Filter.Eq("_id", roomId.ToString());
-        var item = collection.Find(filter).FirstOrDefault();
-        if (item == null) return null;
-        
-        var roomData = BsonSerializer.Deserialize<RoomDbDto>(item);
-
+        var filter = Builders<RoomDbDto>.Filter.Eq("_id", roomId.ToString());
+        var roomData = collection.Find(filter).FirstOrDefault();
         return roomData;
     }
 }

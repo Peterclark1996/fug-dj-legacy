@@ -30,6 +30,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IDataSourceClient, DataSourceClient>();
+builder.Services.AddScoped<IYoutubeClient, YoutubeClient>();
+builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options =>
 {

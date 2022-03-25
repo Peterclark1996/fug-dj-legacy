@@ -1,4 +1,6 @@
-﻿using fugdj.Extensions;
+﻿using fugdj.Dtos.Db;
+using fugdj.Dtos.Http;
+using fugdj.Extensions;
 using fugdj.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,5 +24,14 @@ public class UserController : ControllerBase
     {
         var userId = Request.GetAuthorizedUserId();
         return Ok(_userService.GetUser(userId));
+    }
+
+    [HttpPost]
+    [Authorize]
+    public IActionResult AddMedia([FromBody] MediaHexCodeHttpDto mediaToAdd)
+    {
+        var userId = Request.GetAuthorizedUserId();
+        _userService.AddMediaForUser(userId, mediaToAdd);
+        return Ok();
     }
 }

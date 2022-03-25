@@ -5,7 +5,7 @@ namespace fugdj.Integration;
 
 public interface IDataSourceClient
 {
-    public IMongoCollection<BsonDocument> GetCollection(string collectionName);
+    public IMongoCollection<T> GetCollection<T>(string collectionName);
 }
 
 public class DataSourceClient : IDataSourceClient
@@ -17,6 +17,6 @@ public class DataSourceClient : IDataSourceClient
         _dbClient = new MongoClient(configuration.GetConnectionString("MongoDb"));
     }
 
-    public IMongoCollection<BsonDocument> GetCollection(string collectionName) =>
-        _dbClient.GetDatabase(collectionName).GetCollection<BsonDocument>(collectionName);
+    public IMongoCollection<T> GetCollection<T>(string collectionName) =>
+        _dbClient.GetDatabase(collectionName).GetCollection<T>(collectionName);
 }
