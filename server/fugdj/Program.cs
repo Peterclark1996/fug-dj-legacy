@@ -1,4 +1,5 @@
 using fugdj;
+using fugdj.Hubs;
 using fugdj.Integration;
 using fugdj.Repositories;
 using fugdj.Services;
@@ -22,6 +23,15 @@ builder.Services.AddAuthentication(options =>
     {
         options.Authority = builder.Configuration["Auth0:Domain"];
         options.Audience = builder.Configuration["Auth0:Audience"];
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Path.ToString().StartsWith("/hub/"))
+                    context.Token = context.Request.Query["access_token"];
+                return Task.CompletedTask;
+            },
+        };
     });
 
 builder.Services.AddScoped<IRoomService, RoomService>();
@@ -31,18 +41,9 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IDataSourceClient, DataSourceClient>();
 builder.Services.AddScoped<IYoutubeClient, YoutubeClient>();
-builder.Services.AddHttpClient();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(corsDomainPolicy,
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:3000")
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
-});
+builder.Services.AddHttpClient();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -51,6 +52,14 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
+    
+    app.UseCors(corsPolicyBuilder =>
+    {
+        corsPolicyBuilder.WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .WithMethods("GET", "POST")
+            .AllowCredentials();
+    });
 }
 
 app.UseHttpsRedirection();
@@ -70,5 +79,7 @@ app.UseEndpoints(endpoints =>
 });
 
 app.MapControllers();
+
+app.MapHub<RoomHub>("/hub/room");
 
 app.Run();

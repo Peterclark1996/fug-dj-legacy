@@ -28,7 +28,7 @@ public class UserController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public IActionResult AddMedia([FromBody] MediaHexCodeHttpDto mediaToAdd)
+    public IActionResult AddMedia([FromBody] MediaHashCodeHttpDto mediaToAdd)
     {
         var userId = Request.GetAuthorizedUserId();
         _userService.AddMediaForUser(userId, mediaToAdd);

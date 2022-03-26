@@ -4,7 +4,7 @@ namespace fugdj.Extensions;
 
 public static class MediaExtensions
 {
-    public static string GetMediaHashCode(this MediaHexCodeHttpDto media)
+    public static string GetMediaHashCode(this MediaHashCodeHttpDto media)
     {
         return media.Player switch
         {

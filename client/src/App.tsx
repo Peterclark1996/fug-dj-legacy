@@ -7,6 +7,7 @@ import { ApiProvider } from './Hooks/ApiProvider'
 import { useReducer } from 'react'
 import Reducer from './Reducer/Reducer'
 import PageEnum from './Enums/PageEnum'
+import { RoomHubProvider } from './Hooks/RoomHubProvider'
 
 const queryClient = new QueryClient()
 
@@ -21,9 +22,11 @@ const App = () => {
     return (
         <QueryClientProvider client={queryClient}>
             <ApiProvider>
-                <Loading isLoading={isLoading}>
-                    {isAuthenticated ? <MainScreen state={state} dispatch={dispatch} /> : <LoginScreen />}
-                </ Loading>
+                <RoomHubProvider>
+                    <Loading isLoading={isLoading}>
+                        {isAuthenticated ? <MainScreen state={state} dispatch={dispatch} /> : <LoginScreen />}
+                    </ Loading>
+                </RoomHubProvider>
             </ApiProvider>
         </QueryClientProvider>
     )

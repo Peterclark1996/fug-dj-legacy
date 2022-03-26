@@ -9,7 +9,7 @@ namespace fugdj.Services;
 public interface IUserService
 {
     public UserHttpDto GetUser(string userId);
-    public void AddMediaForUser(string userId, MediaHexCodeHttpDto mediaToAdd);
+    public void AddMediaForUser(string userId, MediaHashCodeHttpDto mediaToAdd);
 }
 
 public class UserService : IUserService
@@ -39,7 +39,7 @@ public class UserService : IUserService
         return new UserHttpDto(user.Name, userTags, userMedia);
     }
 
-    public void AddMediaForUser(string userId, MediaHexCodeHttpDto mediaToAdd)
+    public void AddMediaForUser(string userId, MediaHashCodeHttpDto mediaToAdd)
     {
         var hashCode = mediaToAdd.GetMediaHashCode();
         var mediaInfo = _youtubeClient.GetMediaInfo(mediaToAdd.Code);
