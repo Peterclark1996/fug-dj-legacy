@@ -10,14 +10,14 @@ const getHubUrl = () => {
 }
 
 interface RoomHubInterface {
-    connection: HubConnection | null,
+    connection: HubConnection | undefined,
     connectedRoomId: string | undefined,
     connectToRoom: (roomId: string) => void,
     disconnectFromRoom: () => void,
 }
 
 const RoomHubContect = createContext<RoomHubInterface>({
-    connection: null,
+    connection: undefined,
     connectedRoomId: undefined,
     connectToRoom: () => console.error("RoomHubProvider not initialized"),
     disconnectFromRoom: () => console.error("RoomHubProvider not initialized")
@@ -26,7 +26,7 @@ const RoomHubContect = createContext<RoomHubInterface>({
 export const RoomHubProvider = (props: React.PropsWithChildren<{}>) => {
     const { getAccessTokenSilently } = useAuth0()
 
-    const [connection, setConnection] = useState<HubConnection | null>(null)
+    const [connection, setConnection] = useState<HubConnection | undefined>(undefined)
     const [currentRoom, setCurrentRoom] = useState<string | undefined>(undefined)
 
     const connectToRoom = (roomId: string) => {
@@ -40,7 +40,7 @@ export const RoomHubProvider = (props: React.PropsWithChildren<{}>) => {
 
     const disconnectFromRoom = () => {
         if (currentRoom === undefined) return
-        if (connection === null) return
+        if (connection === undefined) return
 
         setCurrentRoom(undefined)
     }

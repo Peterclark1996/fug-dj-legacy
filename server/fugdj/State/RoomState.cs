@@ -1,5 +1,5 @@
 ﻿using fugdj.Dtos;
-using fugdj.Dtos.Http;
+using fugdj.Dtos.Db;
 
 namespace fugdj.State;
 
@@ -10,7 +10,7 @@ public class RoomState
 
     public QueuedMedia? CurrentlyPlaying;
     public DateTime? StartedPlayingAt;
-        
+
     private readonly List<QueuedMedia> _mediaInQueue = new();
 
     public RoomState(Guid id, string name)
@@ -19,7 +19,7 @@ public class RoomState
         Name = name;
     }
 
-    public void QueueMedia(MediaHttpDto media, string userId)
+    public void QueueMedia(MediaDbDto media, string userId, Action playMediaToRoomF)
     {
         var queuedDatetime = 
             _mediaInQueue.SingleOrDefault(m => m.UserId == userId)?.TimeQueued ?? DateTime.UtcNow;
@@ -28,5 +28,31 @@ public class RoomState
         _mediaInQueue.RemoveAll(m => m.UserId == userId);
             
         _mediaInQueue.Add(mediaToQueue);
+        
+        TryPlayNextInQueue(playMediaToRoomF);
+    }
+
+    private void TryPlayNextInQueue(Action playMediaToRoomF)
+    {
+        if (!_mediaInQueue.Any())
+        {
+            CurrentlyPlaying = null;
+            StartedPlayingAt = null;
+            return;
+        }
+
+        if (!HasCurrentMediaFinishedPlaying()) return;
+
+        CurrentlyPlaying = _mediaInQueue.OrderBy(m => m.TimeQueued).First();
+        StartedPlayingAt = DateTime.UtcNow;
+        playMediaToRoomF.Invoke();
+        _mediaInQueue.Remove(CurrentlyPlaying);
+    }
+
+    private bool HasCurrentMediaFinishedPlaying()
+    {
+        if (CurrentlyPlaying == null || StartedPlayingAt == null) return true;
+
+        return StartedPlayingAt + TimeSpan.FromSeconds(CurrentlyPlaying.Media.DurationSeconds) < DateTime.UtcNow;
     }
 }

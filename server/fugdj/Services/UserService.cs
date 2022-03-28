@@ -41,7 +41,7 @@ public class UserService : IUserService
 
     public void AddMediaForUser(string userId, MediaHashCodeHttpDto mediaToAdd)
     {
-        var hashCode = mediaToAdd.GetMediaHashCode();
+        var hashCode = mediaToAdd.GetMediaHashCodeAsString();
         var mediaInfo = _youtubeClient.GetMediaInfo(mediaToAdd.Code);
         var media = new MediaDbDto(hashCode, mediaInfo.Name, mediaInfo.DurationSeconds);
         _userRepository.AddMediaForUser(userId, new MediaWithTagsDbDto(media, new List<int>()));

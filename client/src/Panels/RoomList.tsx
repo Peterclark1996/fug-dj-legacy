@@ -20,9 +20,7 @@ const RoomList = () => {
         <div className={`d-flex flex-column flex-grow-1 p-1 ${classes.background} ${classes.shadow}`}>
             <Loading isLoading={isLoading && !error} >
                 {
-                    !rooms || error ?
-                        <div>No rooms found</div> :
-                        rooms.map(room => <RoomButton key={room.id} roomName={room.name} selected={room.id === connectedRoomId} onClick={() => onRoomButtonClick(room.id)} />)
+                    rooms && !error && rooms.map(room => <RoomButton key={room.id} roomName={room.name} selected={room.id === connectedRoomId} onClick={() => onRoomButtonClick(room.id)} />)
                 }
             </Loading>
         </div>

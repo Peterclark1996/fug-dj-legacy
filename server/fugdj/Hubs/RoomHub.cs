@@ -1,8 +1,7 @@
-using fugdj.Dtos;
 using fugdj.Dtos.Http;
 using fugdj.Extensions;
+using fugdj.Repositories;
 using fugdj.Services;
-using fugdj.State;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -10,47 +9,42 @@ namespace fugdj.Hubs;
 
 public interface IRoomHub
 {
-    Task PlayMedia(QueuedMedia mediaToPlay);
+    void PlayMedia(MediaBeingPlayedHttpDto mediaToPlay);
 }
 
 public class RoomHub : Hub<IRoomHub>
 {
     private readonly IRoomService _roomService;
-    private readonly IUserService _userService;
+    private readonly IUserRepository _userRepository;
 
-    public RoomHub(IRoomService roomService, IUserService userService)
+    public RoomHub(IRoomService roomService, IUserRepository userRepository)
     {
         _roomService = roomService;
-        _userService = userService;
+        _userRepository = userRepository;
     }
-    
+
     [Authorize]
     public Task QueueMedia(Guid roomId, Player player, string code)
     {
         var userId = Context.GetAuthorizedUserId();
-
-        var media = _userService.GetUser(userId).Media
-            .SingleOrDefault(m => m.Player == player && m.Code == code);
-        if (media == null) return Task.CompletedTask;
+        var user = _userRepository.GetUser(userId);
+        var mediaWithTags = user?.MediaList
+            .SingleOrDefault(m => m.Media.HashCode.GetPlayer() == player && m.Media.HashCode.GetCode() == code);
+        if (mediaWithTags == null) return Task.CompletedTask;
 
         var room = _roomService.GetCurrentRoomState(roomId);
-        room.QueueMedia(media, userId);
+        room.QueueMedia(mediaWithTags.Media, userId, () =>
+        {
+            Clients.Group(roomId.ToString()).PlayMedia(new MediaBeingPlayedHttpDto(mediaWithTags.Media.Name,
+                mediaWithTags.Media.Player, mediaWithTags.Media.Code, userId));
+        });
 
         return Task.CompletedTask;
     }
 
-    public async Task JoinRoom(Guid roomId, string authToken)
+    [Authorize]
+    public async Task JoinRoom(Guid roomId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, roomId.ToString());
-    }
-
-    public override async Task OnDisconnectedAsync(Exception? exception)
-    {
-        await base.OnDisconnectedAsync(exception);
-    }
-    
-    public override async Task OnConnectedAsync()
-    {
-        await base.OnConnectedAsync();
     }
 }
