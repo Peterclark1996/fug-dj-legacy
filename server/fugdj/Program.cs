@@ -30,7 +30,7 @@ builder.Services.AddAuthentication(options =>
                 if (context.Request.Path.ToString().StartsWith("/hub/"))
                     context.Token = context.Request.Query["access_token"];
                 return Task.CompletedTask;
-            },
+            }
         };
     });
 

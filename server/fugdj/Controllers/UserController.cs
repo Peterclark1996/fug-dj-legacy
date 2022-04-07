@@ -1,5 +1,4 @@
-﻿using fugdj.Dtos.Db;
-using fugdj.Dtos.Http;
+﻿using fugdj.Dtos.Http;
 using fugdj.Extensions;
 using fugdj.Services;
 using Microsoft.AspNetCore.Authorization;
