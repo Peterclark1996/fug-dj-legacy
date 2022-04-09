@@ -34,7 +34,8 @@ public class UserTests
         var userService = new UserService(
             new UserRepositoryMock(
                 new List<UserDbDto> {new(userId, name, tags, mediaList)},
-                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>()
+                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(),
+                Common.CreateNotImplementedAction<string, string>()
             ),
             new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
         );
@@ -65,7 +66,8 @@ public class UserTests
         var userService = new UserService(
             new UserRepositoryMock(
                 new List<UserDbDto>(),
-                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>()
+                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(),
+                Common.CreateNotImplementedAction<string, string>()
             ),
             new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
         );
@@ -82,7 +84,8 @@ public class UserTests
         var userService = new UserService(
             new UserRepositoryMock(
                 new List<UserDbDto>(),
-                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>()
+                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(),
+                Common.CreateNotImplementedAction<string, string>()
             ),
             new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
         );
@@ -112,7 +115,7 @@ public class UserTests
             {
                 savedMediaUserId = user;
                 savedMedia = media;
-            }),
+            }, Common.CreateNotImplementedAction<string, string>()),
             new YoutubeClientMock(mediaCode =>
             {
                 if (mediaCode == code)
@@ -138,5 +141,37 @@ public class UserTests
         resultMedia.Media.Name.ShouldBe(mediaInfo.Name);
         resultMedia.Media.DurationSeconds.ShouldBe(mediaInfo.DurationSeconds);
         resultMedia.TagIds.ShouldBeEmpty();
+    }
+    
+    [Fact]
+    public void WhenDeletingMedia_MediaIsRemoved()
+    {
+        var userId = Common.UniqueString();
+        var mediaHashCode = $"y{Common.UniqueString()}";
+
+        string? deletedMediaUserId = null;
+        string? deletedMedia = null;
+
+        var userService = new UserService(
+            new UserRepositoryMock(
+                new List<UserDbDto>(), 
+                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(), 
+                (user, media) =>
+                {
+                    deletedMediaUserId = user;
+                    deletedMedia = media;
+                }),
+            new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
+        );
+        var userController = new UserController(userService)
+        {
+            ControllerContext = Common.ContextWithAuthorizedUser(userId)
+        };
+
+        userController.DeleteMedia(mediaHashCode);
+
+        deletedMediaUserId.ShouldBe(userId);
+        var resultMedia = deletedMedia.ShouldNotBeNull();
+        resultMedia.ShouldBe(mediaHashCode);
     }
 }

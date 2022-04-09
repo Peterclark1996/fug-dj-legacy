@@ -33,4 +33,13 @@ public class UserController : ControllerBase
         _userService.AddMediaForUser(userId, mediaToAdd);
         return Ok();
     }
+    
+    [HttpDelete]
+    [Authorize]
+    public IActionResult DeleteMedia([FromQuery] string media)
+    {
+        var userId = Request.GetAuthorizedUserId();
+        _userService.DeleteMediaForUser(userId, media);
+        return Ok();
+    }
 }

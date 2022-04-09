@@ -11,12 +11,14 @@ const getApiUrl = () => {
 
 interface ApiContextInterface {
     apiGet: (url: string) => Promise<any>,
-    apiPost: (url: string, data: any) => Promise<any>
+    apiPost: (url: string, data: any) => Promise<any>,
+    apiDelete: (url: string) => Promise<any>
 }
 
 const ApiContext = createContext<ApiContextInterface>({
     apiGet: () => Promise.resolve({}),
-    apiPost: () => Promise.resolve({})
+    apiPost: () => Promise.resolve({}),
+    apiDelete: () => Promise.resolve({})
 })
 
 export const ApiProvider = (props: React.PropsWithChildren<{}>) => {
@@ -32,9 +34,15 @@ export const ApiProvider = (props: React.PropsWithChildren<{}>) => {
             .then(token => axios.post(`${getApiUrl()}${url}`, data, { headers: { Authorization: `Bearer ${token}` } }))
             .then(res => res.data)
 
+    const apiDelete = (url: string) =>
+        getAccessTokenSilently()
+            .then(token => axios.delete(`${getApiUrl()}${url}`, { headers: { Authorization: `Bearer ${token}` } }))
+            .then(res => res.data)
+
     const value = {
         apiGet,
-        apiPost
+        apiPost,
+        apiDelete
     }
 
     return <ApiContext.Provider value={value} {...props} />

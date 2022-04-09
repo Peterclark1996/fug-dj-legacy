@@ -9,7 +9,7 @@
 .toolTip {
     position: relative;
 }
-  
+
 .toolTip .toolTipText {
     visibility: hidden;
     text-align: center;
@@ -17,12 +17,19 @@
     position: absolute;
     left: 125%;
 }
-  
+
 .toolTip:hover .toolTipText {
     visibility: visible;
 }
 
-.fixedSize {
+.fixedSizeSmall {
+    max-width: 20px;
+    min-width: 20px;
+    max-height: 20px;
+    min-height: 20px;
+}
+
+.fixedSizeLarge {
     max-width: 50px;
     min-width: 50px;
     max-height: 50px;
