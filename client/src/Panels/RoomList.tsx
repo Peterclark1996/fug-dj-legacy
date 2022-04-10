@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import Loading from '../Components/Loading'
 import RoomButton from '../Components/RoomButton'
@@ -17,7 +16,7 @@ const RoomList = () => {
     }
 
     return (
-        <div className={`d-flex flex-column flex-grow-1 p-1 ${classes.background} ${classes.shadow}`}>
+        <div className={`d-flex flex-column flex-grow-1 align-items-center p-1 ${classes.background} ${classes.shadow}`}>
             <Loading isLoading={isLoading && !error} >
                 {
                     rooms && !error && rooms.map(room => <RoomButton key={room.id} roomName={room.name} selected={room.id === connectedRoomId} onClick={() => onRoomButtonClick(room.id)} />)
