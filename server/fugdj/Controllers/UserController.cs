@@ -34,6 +34,15 @@ public class UserController : ControllerBase
         return Ok();
     }
     
+    [HttpPatch]
+    [Authorize]
+    public IActionResult UpdateMedia([FromBody] MediaHttpDto mediaToAdd)
+    {
+        var userId = Request.GetAuthorizedUserId();
+        _userService.UpdateMediaForUser(userId, mediaToAdd);
+        return Ok();
+    }
+    
     [HttpDelete]
     [Authorize]
     public IActionResult DeleteMedia([FromQuery] string media)

@@ -12,12 +12,16 @@ const getApiUrl = () => {
 interface ApiContextInterface {
     apiGet: (url: string) => Promise<any>,
     apiPost: (url: string, data: any) => Promise<any>,
+    apiPut: (url: string, data: any) => Promise<any>,
+    apiPatch: (url: string, data: any) => Promise<any>,
     apiDelete: (url: string) => Promise<any>
 }
 
 const ApiContext = createContext<ApiContextInterface>({
     apiGet: () => Promise.resolve({}),
     apiPost: () => Promise.resolve({}),
+    apiPut: () => Promise.resolve({}),
+    apiPatch: () => Promise.resolve({}),
     apiDelete: () => Promise.resolve({})
 })
 
@@ -34,6 +38,16 @@ export const ApiProvider = (props: React.PropsWithChildren<{}>) => {
             .then(token => axios.post(`${getApiUrl()}${url}`, data, { headers: { Authorization: `Bearer ${token}` } }))
             .then(res => res.data)
 
+    const apiPut = (url: string, data: any) =>
+        getAccessTokenSilently()
+            .then(token => axios.put(`${getApiUrl()}${url}`, data, { headers: { Authorization: `Bearer ${token}` } }))
+            .then(res => res.data)
+
+    const apiPatch = (url: string, data: any) =>
+        getAccessTokenSilently()
+            .then(token => axios.patch(`${getApiUrl()}${url}`, data, { headers: { Authorization: `Bearer ${token}` } }))
+            .then(res => res.data)
+
     const apiDelete = (url: string) =>
         getAccessTokenSilently()
             .then(token => axios.delete(`${getApiUrl()}${url}`, { headers: { Authorization: `Bearer ${token}` } }))
@@ -42,6 +56,8 @@ export const ApiProvider = (props: React.PropsWithChildren<{}>) => {
     const value = {
         apiGet,
         apiPost,
+        apiPut,
+        apiPatch,
         apiDelete
     }
 

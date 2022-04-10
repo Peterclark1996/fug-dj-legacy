@@ -57,7 +57,7 @@ if (app.Environment.IsDevelopment())
     {
         corsPolicyBuilder.WithOrigins("http://localhost:3000")
             .AllowAnyHeader()
-            .WithMethods("GET", "POST", "DELETE")
+            .WithMethods("GET", "POST", "DELETE", "PUT", "PATCH")
             .AllowCredentials();
     });
 }

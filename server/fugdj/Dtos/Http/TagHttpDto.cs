@@ -1,6 +1,4 @@
-﻿using fugdj.Integration;
-
-namespace fugdj.Dtos.Http;
+﻿namespace fugdj.Dtos.Http;
 
 public class TagHttpDto
 {

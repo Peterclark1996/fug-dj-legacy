@@ -1,4 +1,3 @@
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace fugdj.Integration;
@@ -17,6 +16,16 @@ public class DataSourceClient : IDataSourceClient
         _dbClient = new MongoClient(configuration.GetConnectionString("MongoDb"));
     }
 
-    public IMongoCollection<T> GetCollection<T>(string collectionName) =>
-        _dbClient.GetDatabase(collectionName).GetCollection<T>(collectionName);
+    public IMongoCollection<T> GetCollection<T>(string collectionName)
+    {
+        try
+        {
+            return _dbClient.GetDatabase(collectionName).GetCollection<T>(collectionName);
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(e);
+            throw new InternalServerException();
+        }
+    }
 }

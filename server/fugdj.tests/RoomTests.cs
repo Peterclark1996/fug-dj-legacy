@@ -4,11 +4,9 @@ using System.Linq;
 using fugdj.Controllers;
 using fugdj.Dtos.Db;
 using fugdj.Dtos.Http;
-using fugdj.Repositories;
 using fugdj.Services;
 using fugdj.tests.Helpers;
 using fugdj.tests.Mocks;
-using Moq;
 using Shouldly;
 using Xunit;
 

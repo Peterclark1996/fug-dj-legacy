@@ -1,14 +1,14 @@
 import { useMutation, useQueryClient } from "react-query"
-import PlayerEnum from "../Enums/PlayerEnum"
-import { useApi } from "../Hooks/ApiProvider"
-import { useRoomHub } from "../Hooks/RoomHubProvider"
-import { BuildMediaResourceId } from "../Logic"
-import MediaData from "../Types/MediaData"
-import TagData from "../Types/TagData"
+import PlayerEnum from "../../Enums/PlayerEnum"
+import { useApi } from "../../Hooks/ApiProvider"
+import { useRoomHub } from "../../Hooks/RoomHubProvider"
+import { BuildMediaResourceId } from "../../Logic"
+import MediaData from "../../Types/MediaData"
+import TagData from "../../Types/TagData"
 import LinkButton from "./LinkButton"
-import Loading from "./Loading"
+import Loading from "../Loading"
 import classes from "./Media.module.scss"
-import StandardButton, { ButtonSize } from "./StandardButton"
+import StandardButton, { ButtonSize } from "../StandardButton"
 import Tag from "./Tag"
 
 type MediaProps = {
@@ -27,7 +27,7 @@ const GetUrlForMedia = (media: MediaData) => {
 
 const Media = ({ media, userTags }: MediaProps) => {
     const queryClient = useQueryClient()
-    const { apiDelete } = useApi()
+    const { apiPatch, apiDelete } = useApi()
     const { connection, connectedRoomId } = useRoomHub()
 
     const onAddToQueueClick = () => {
@@ -43,9 +43,18 @@ const Media = ({ media, userTags }: MediaProps) => {
         }
     )
 
+    const deleteMediaTagMutation = useMutation(
+        (tagId: number) => apiPatch(`user/updatemedia`, { ...media, tags: media.tags.filter(t => t !== tagId) }),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(["user"])
+            }
+        }
+    )
+
     return (
         <div className={`d-flex flex-column m-1 p-1 user-select-none rounded ${classes.shadow}`}>
-            <Loading isLoading={deleteMediaMutation.isLoading}>
+            <Loading isLoading={deleteMediaMutation.isLoading || deleteMediaTagMutation.isLoading}>
                 <div className="d-flex">
                     <span className={classes.largeFont}>{media.name}</span>
                     <StandardButton className="ms-auto p-2" iconClasses="fa-solid fa-trash-can" size={ButtonSize.SMALL} onClick={deleteMediaMutation.mutate} />
@@ -56,7 +65,7 @@ const Media = ({ media, userTags }: MediaProps) => {
                             .map(tag => userTags.find(userTag => userTag.id === tag))
                             .map((tagData, index) => {
                                 return (
-                                    tagData && <Tag key={index} tag={tagData} />
+                                    tagData && <Tag key={index} tag={tagData} onClick={() => deleteMediaTagMutation.mutate(tagData.id)} />
                                 )
                             })
                     }

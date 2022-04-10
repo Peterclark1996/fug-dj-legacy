@@ -18,7 +18,7 @@ public static class RequestExtensions
 
             return userId;
         }
-        catch (Exception _)
+        catch (Exception)
         {
             throw new UnauthorisedException();
         }

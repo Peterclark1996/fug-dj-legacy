@@ -45,9 +45,9 @@
     
     public class InternalServerException : HttpException
     {
-        public InternalServerException() : base("500: Internal Server Error")
+        public InternalServerException() : base("503: Service Unavailable")
         {
-            StatusCode = 500;
+            StatusCode = 503;
         }
     }
 }

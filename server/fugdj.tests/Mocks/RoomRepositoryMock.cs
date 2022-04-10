@@ -17,5 +17,5 @@ public class RoomRepositoryMock : IRoomRepository
 
     public IEnumerable<RoomDbDto> GetAllRooms() => _rooms;
 
-    public RoomDbDto? GetRoomData(Guid roomId) => _rooms.SingleOrDefault(r => Guid.Parse((string) r.Id) == roomId);
+    public RoomDbDto? GetRoomData(Guid roomId) => _rooms.SingleOrDefault(r => Guid.Parse(r.Id) == roomId);
 }

@@ -4,6 +4,7 @@ using fugdj.Controllers;
 using fugdj.Dtos;
 using fugdj.Dtos.Db;
 using fugdj.Dtos.Http;
+using fugdj.Extensions;
 using fugdj.Services;
 using fugdj.tests.Helpers;
 using fugdj.tests.Mocks;
@@ -35,6 +36,7 @@ public class UserTests
             new UserRepositoryMock(
                 new List<UserDbDto> {new(userId, name, tags, mediaList)},
                 Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(),
+                Common.CreateNotImplementedAction<string, MediaUpdateDbDto>(), 
                 Common.CreateNotImplementedAction<string, string>()
             ),
             new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
@@ -67,6 +69,7 @@ public class UserTests
             new UserRepositoryMock(
                 new List<UserDbDto>(),
                 Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(),
+                Common.CreateNotImplementedAction<string, MediaUpdateDbDto>(), 
                 Common.CreateNotImplementedAction<string, string>()
             ),
             new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
@@ -85,6 +88,7 @@ public class UserTests
             new UserRepositoryMock(
                 new List<UserDbDto>(),
                 Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(),
+                Common.CreateNotImplementedAction<string, MediaUpdateDbDto>(), 
                 Common.CreateNotImplementedAction<string, string>()
             ),
             new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
@@ -115,7 +119,9 @@ public class UserTests
             {
                 savedMediaUserId = user;
                 savedMedia = media;
-            }, Common.CreateNotImplementedAction<string, string>()),
+            }, 
+                Common.CreateNotImplementedAction<string, MediaUpdateDbDto>(), 
+                Common.CreateNotImplementedAction<string, string>()),
             new YoutubeClientMock(mediaCode =>
             {
                 if (mediaCode == code)
@@ -156,6 +162,7 @@ public class UserTests
             new UserRepositoryMock(
                 new List<UserDbDto>(), 
                 Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(), 
+                Common.CreateNotImplementedAction<string, MediaUpdateDbDto>(), 
                 (user, media) =>
                 {
                     deletedMediaUserId = user;
@@ -173,5 +180,44 @@ public class UserTests
         deletedMediaUserId.ShouldBe(userId);
         var resultMedia = deletedMedia.ShouldNotBeNull();
         resultMedia.ShouldBe(mediaHashCode);
+    }
+    
+    [Fact]
+    public void WhenUpdatingExistingMedia_MediaIsUpdated()
+    {
+        var mediaName = Common.UniqueString();
+        var userId = Common.UniqueString();
+        var mediaHashCode = $"y{Common.UniqueString()}";
+        var tags = new List<int> { 1, 5 };
+        var mediaToUpdate = new MediaHttpDto(mediaName, mediaHashCode.GetPlayer(), mediaHashCode.GetCode(), tags);
+
+        string? updatedMediaUserId = null;
+        MediaUpdateDbDto? updatedMedia = null;
+
+        var userService = new UserService(
+            new UserRepositoryMock(
+                new List<UserDbDto>(), 
+                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(), 
+                (user, media) =>
+                {
+                    updatedMediaUserId = user;
+                    updatedMedia = media;
+                }, 
+                Common.CreateNotImplementedAction<string, string>()
+                ),
+                new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
+        );
+        var userController = new UserController(userService)
+        {
+            ControllerContext = Common.ContextWithAuthorizedUser(userId)
+        };
+
+        userController.UpdateMedia(mediaToUpdate);
+
+        updatedMediaUserId.ShouldBe(userId);
+        var resultMedia = updatedMedia.ShouldNotBeNull();
+        resultMedia.HashCode.ShouldBe(mediaHashCode);
+        resultMedia.Name.ShouldBe(mediaName);
+        resultMedia.TagIds.ShouldBeEquivalentTo(tags);
     }
 }
