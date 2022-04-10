@@ -9,12 +9,15 @@ type TagProps = {
 const Tag = ({ tag, onClick }: TagProps) => {
     return (
         <div
-            className={`px-2 me-1 pointer ${classes.rounded} ${classes.shadow} ${classes.smallFont}`}
+            className={`d-flex align-items-center me-1 pointer ${classes.rounded} ${classes.shadow} ${classes.smallFont}`}
             role="button"
             style={{ "backgroundColor": `#${tag.colourHex}` }}
             onClick={onClick}
         >
-            {tag.name}
+            <span className="d-flex align-items-center ps-1 mb-1">{tag.name}</span>
+            <div className={`bg-secondary px-1 mx-1 ${classes.rounded}`}>
+                <i className="fa-solid fa-xmark" />
+            </div>
         </div>
     )
 }
