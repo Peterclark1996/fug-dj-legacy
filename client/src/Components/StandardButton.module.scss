@@ -1,9 +1,11 @@
+@import "../Variables.scss";
+
 .buttonColour {
-    background-color: rgb(103, 164, 255);
+    background-color: $buttonColour;
 }
 
 .buttonColour:hover {
-    background-color: rgb(85, 136, 211);
+    background-color: $buttonColourHover;
 }
 
 .toolTip {

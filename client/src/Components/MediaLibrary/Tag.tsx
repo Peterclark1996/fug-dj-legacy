@@ -14,8 +14,8 @@ const Tag = ({ tag, onClick }: TagProps) => {
             style={{ "backgroundColor": `#${tag.colourHex}` }}
             onClick={onClick}
         >
-            <span className="mb-1">{tag.name}</span>
-            <i className={`ms-1 text-light-grey fa-solid fa-circle-xmark`} />
+            <span>{tag.name}</span>
+            <i className="ms-1 text-light-grey fa-solid fa-circle-xmark" />
         </div>
     )
 }

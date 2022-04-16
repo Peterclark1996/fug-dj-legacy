@@ -10,6 +10,9 @@ import Loading from "../Loading"
 import classes from "./Media.module.scss"
 import StandardButton, { ButtonSize } from "../StandardButton"
 import Tag from "./Tag"
+import AddTag from "./AddTag"
+import { useState } from "react"
+import TagInput from "./TagInput"
 
 type MediaProps = {
     media: MediaData,
@@ -29,6 +32,9 @@ const Media = ({ media, userTags }: MediaProps) => {
     const queryClient = useQueryClient()
     const { apiPatch, apiDelete } = useApi()
     const { connection, connectedRoomId } = useRoomHub()
+
+    const [isAddingTag, setIsAddingTag] = useState(false)
+    const [newTagLabel, setNewTagLabel] = useState("")
 
     const onAddToQueueClick = () => {
         connection?.send('QueueMedia', connectedRoomId, media.player, media.code)
@@ -52,6 +58,40 @@ const Media = ({ media, userTags }: MediaProps) => {
         }
     )
 
+    const onAddTagConfirmClick = () => {
+        const tagToAdd = userTags.find(t => t.name === newTagLabel)
+        if (tagToAdd === undefined) return
+
+        addMediaTagMutation.mutate(tagToAdd.id)
+        setIsAddingTag(false)
+    }
+
+    const onAddConfirmClick = () => {
+        const tagToAdd = userTags.find(t => t.name.toLowerCase() === newTagLabel.toLowerCase())
+        if (tagToAdd === undefined) return
+
+        addMediaTagMutation.mutate(tagToAdd.id)
+        setIsAddingTag(false)
+    }
+
+    const onAddCancelClick = () => {
+        setIsAddingTag(false)
+    }
+
+    const addMediaTagMutation = useMutation(
+        (tagId: number) => apiPatch(`user/updatemedia`, { ...media, tags: [...media.tags, tagId] }),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(["user"])
+            }
+        }
+    )
+
+    const onAddTagClick = () => {
+        setNewTagLabel("")
+        setIsAddingTag(true)
+    }
+
     return (
         <div className={`d-flex flex-column m-1 p-1 user-select-none rounded ${classes.shadow}`}>
             <Loading isLoading={deleteMediaMutation.isLoading || deleteMediaTagMutation.isLoading}>
@@ -69,6 +109,21 @@ const Media = ({ media, userTags }: MediaProps) => {
                                 )
                             })
                     }
+                    {
+                        isAddingTag ?
+                            <TagInput
+                                label={newTagLabel}
+                                onLabelChange={setNewTagLabel}
+                                availableTags={userTags}
+                                colourHex="d9d2e9"
+                                onAddConfirmClick={onAddConfirmClick}
+                                onAddCancelClick={onAddCancelClick}
+                            /> :
+                            <AddTag
+                                onClick={onAddTagClick}
+                            />
+                    }
+
                 </div>
                 <div className="d-flex justify-content-between mt-auto">
                     <StandardButton className="py-0 px-1 text-white" text="Add to Queue" onClick={onAddToQueueClick} />

@@ -36,10 +36,10 @@ public class UserController : ControllerBase
     
     [HttpPatch]
     [Authorize]
-    public IActionResult UpdateMedia([FromBody] MediaHttpDto mediaToAdd)
+    public IActionResult UpdateMedia([FromBody] MediaHttpDto mediaToUpdate)
     {
         var userId = Request.GetAuthorizedUserId();
-        _userService.UpdateMediaForUser(userId, mediaToAdd);
+        _userService.UpdateMediaForUser(userId, mediaToUpdate);
         return Ok();
     }
     
