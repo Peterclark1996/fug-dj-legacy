@@ -52,7 +52,7 @@ public class UserService : IUserService
     public void UpdateMediaForUser(string userId, MediaHttpDto mediaToUpdate)
     {
         var hashCode = new MediaHashCodeHttpDto(mediaToUpdate.Player, mediaToUpdate.Code).GetMediaHashCodeAsString();
-        _userRepository.UpdateMediaForUser(userId, new MediaUpdateDbDto(hashCode, mediaToUpdate.Name, mediaToUpdate.Tags));
+        _userRepository.UpdateMediaForUser(userId, new MediaUpdateDbDto(hashCode, mediaToUpdate.Name, new HashSet<int>(mediaToUpdate.Tags)));
     }
 
     public void DeleteMediaForUser(string userId, string mediaToAdd)

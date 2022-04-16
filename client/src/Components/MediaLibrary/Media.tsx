@@ -58,14 +58,6 @@ const Media = ({ media, userTags }: MediaProps) => {
         }
     )
 
-    const onAddTagConfirmClick = () => {
-        const tagToAdd = userTags.find(t => t.name === newTagLabel)
-        if (tagToAdd === undefined) return
-
-        addMediaTagMutation.mutate(tagToAdd.id)
-        setIsAddingTag(false)
-    }
-
     const onAddConfirmClick = () => {
         const tagToAdd = userTags.find(t => t.name.toLowerCase() === newTagLabel.toLowerCase())
         if (tagToAdd === undefined) return
@@ -114,7 +106,7 @@ const Media = ({ media, userTags }: MediaProps) => {
                             <TagInput
                                 label={newTagLabel}
                                 onLabelChange={setNewTagLabel}
-                                availableTags={userTags}
+                                availableTags={userTags.filter(t => !media.tags.includes(t.id))}
                                 colourHex="d9d2e9"
                                 onAddConfirmClick={onAddConfirmClick}
                                 onAddCancelClick={onAddCancelClick}

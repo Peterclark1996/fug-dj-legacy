@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using fugdj.Controllers;
 using fugdj.Dtos;
 using fugdj.Dtos.Db;
@@ -218,6 +219,45 @@ public class UserTests
         var resultMedia = updatedMedia.ShouldNotBeNull();
         resultMedia.HashCode.ShouldBe(mediaHashCode);
         resultMedia.Name.ShouldBe(mediaName);
-        resultMedia.TagIds.ShouldBeEquivalentTo(tags);
+        resultMedia.TagIds.ToList().ShouldBeEquivalentTo(tags);
+    }
+    
+    [Fact]
+    public void WhenUpdatingExistingMediaWithDuplicateTags_MediaIsUpdatedWithoutDuplicateTags()
+    {
+        var mediaName = Common.UniqueString();
+        var userId = Common.UniqueString();
+        var mediaHashCode = $"y{Common.UniqueString()}";
+        var tags = new List<int> { 1, 1 };
+        var mediaToUpdate = new MediaHttpDto(mediaName, mediaHashCode.GetPlayer(), mediaHashCode.GetCode(), tags);
+
+        string? updatedMediaUserId = null;
+        MediaUpdateDbDto? updatedMedia = null;
+
+        var userService = new UserService(
+            new UserRepositoryMock(
+                new List<UserDbDto>(), 
+                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(), 
+                (user, media) =>
+                {
+                    updatedMediaUserId = user;
+                    updatedMedia = media;
+                }, 
+                Common.CreateNotImplementedAction<string, string>()
+            ),
+            new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
+        );
+        var userController = new UserController(userService)
+        {
+            ControllerContext = Common.ContextWithAuthorizedUser(userId)
+        };
+
+        userController.UpdateMedia(mediaToUpdate);
+
+        updatedMediaUserId.ShouldBe(userId);
+        var resultMedia = updatedMedia.ShouldNotBeNull();
+        resultMedia.HashCode.ShouldBe(mediaHashCode);
+        resultMedia.Name.ShouldBe(mediaName);
+        resultMedia.TagIds.ToList().ShouldBeEquivalentTo(new List<int>{ 1 });
     }
 }

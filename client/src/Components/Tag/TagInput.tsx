@@ -44,7 +44,6 @@ const TagInput = ({ label, onLabelChange, availableTags, colourHex, onAddConfirm
                                 >
                                     <span>{tag.name}</span>
                                 </div>
-
                             )
                         }
                     </div>
