@@ -32,10 +32,20 @@ const TagInput = ({ label, onLabelChange, availableTags, colourHex, onAddConfirm
                 <i className="ms-1 text-danger fa-solid fa-circle-xmark" role="button" onClick={onAddCancelClick} />
             </div>
             <div className="ms-1">
-                <div className={`d-block position-absolute bg-secondary rounded py-1 px-2 ${classes.shadow} ${classes.scrollable} ${classes.options}`}>
+                <div className={`d-block position-absolute bg-secondary rounded px-1 pt-1 ${classes.shadow} ${classes.scrollable} ${classes.options}`}>
                     <div className="d-flex flex-column">
                         {
-                            tagsToShow.map(tag => <span onClick={() => onLabelChange(tag.name)}>{tag.name}</span>)
+                            tagsToShow.map(tag =>
+                                <div
+                                    className={`d-flex align-items-center px-1 mb-1 ${classes.rounded} ${classes.shadow} ${classes.smallFont}`}
+                                    role="button"
+                                    style={{ "backgroundColor": `#${tag.colourHex}` }}
+                                    onClick={() => onLabelChange(tag.name)}
+                                >
+                                    <span>{tag.name}</span>
+                                </div>
+
+                            )
                         }
                     </div>
                 </div>

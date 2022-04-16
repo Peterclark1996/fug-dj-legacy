@@ -9,10 +9,10 @@ import LinkButton from "./LinkButton"
 import Loading from "../Loading"
 import classes from "./Media.module.scss"
 import StandardButton, { ButtonSize } from "../StandardButton"
-import Tag from "./Tag"
-import AddTag from "./AddTag"
+import Tag from "../Tag/Tag"
+import AddTag from "../Tag/AddTag"
 import { useState } from "react"
-import TagInput from "./TagInput"
+import TagInput from "../Tag/TagInput"
 
 type MediaProps = {
     media: MediaData,
