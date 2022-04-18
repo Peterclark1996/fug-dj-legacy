@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "react-query"
 import PlayerEnum from "../../Enums/PlayerEnum"
 import { useApi } from "../../Hooks/ApiProvider"
-import { useRoomHub } from "../../Hooks/RoomHubProvider"
 import { BuildMediaResourceId } from "../../Logic"
 import MediaData from "../../Types/MediaData"
 import TagData from "../../Types/TagData"
@@ -13,6 +12,7 @@ import Tag from "../Tag/Tag"
 import AddTag from "../Tag/AddTag"
 import { useState } from "react"
 import TagInput from "../Tag/TagInput"
+import { useMediaQueue } from "../../Hooks/MediaQueueProvider"
 
 type MediaProps = {
     media: MediaData,
@@ -31,14 +31,10 @@ const GetUrlForMedia = (media: MediaData) => {
 const Media = ({ media, userTags }: MediaProps) => {
     const queryClient = useQueryClient()
     const { apiPatch, apiDelete } = useApi()
-    const { connection, connectedRoomId } = useRoomHub()
+    const { addToQueue } = useMediaQueue()
 
     const [isAddingTag, setIsAddingTag] = useState(false)
     const [newTagLabel, setNewTagLabel] = useState("")
-
-    const onAddToQueueClick = () => {
-        connection?.send('QueueMedia', connectedRoomId, media.player, media.code)
-    }
 
     const deleteMediaMutation = useMutation(
         () => apiDelete(`user/deletemedia?media=${BuildMediaResourceId(media.player, media.code)}`),
@@ -89,7 +85,13 @@ const Media = ({ media, userTags }: MediaProps) => {
             <Loading isLoading={deleteMediaMutation.isLoading || deleteMediaTagMutation.isLoading}>
                 <div className="d-flex">
                     <span className={classes.largeFont}>{media.name}</span>
-                    <StandardButton className="ms-auto p-2" iconClasses="fa-solid fa-trash-can" size={ButtonSize.SMALL} onClick={deleteMediaMutation.mutate} />
+                    <StandardButton
+                        className="ms-auto p-2"
+                        iconClasses="fa-solid fa-trash-can"
+                        toolTipText="Delete"
+                        size={ButtonSize.SMALL}
+                        onClick={deleteMediaMutation.mutate}
+                    />
                 </div>
                 <div className="d-flex my-1">
                     {
@@ -118,7 +120,7 @@ const Media = ({ media, userTags }: MediaProps) => {
 
                 </div>
                 <div className="d-flex justify-content-between mt-auto">
-                    <StandardButton className="py-0 px-1 text-white" text="Add to Queue" onClick={onAddToQueueClick} />
+                    <StandardButton className="py-0 px-1 text-white" text="Add to Queue" onClick={() => addToQueue(media)} />
                     <LinkButton linkUrl={GetUrlForMedia(media)} text={PlayerEnum[media.player]} />
                 </div>
             </Loading>

@@ -10,8 +10,8 @@ import MediaLibraryScreen from './MediaLibraryScreen'
 import { useQuery } from 'react-query'
 import { useApi } from '../Hooks/ApiProvider'
 import UserData from '../Types/UserData'
-import { useAuth0 } from '@auth0/auth0-react'
 import { useEffect } from 'react'
+import MediaQueue from '../Panels/MediaQueue'
 
 type MainScreenProps = {
     state: AppState,
@@ -37,6 +37,7 @@ const MainScreen = ({ state, dispatch }: MainScreenProps) => {
                     <UserActions state={state} dispatch={dispatch} />
                 </div>
                 <Stage />
+                <MediaQueue />
             </div>
             {
                 state.selectedPage === PageEnum.Library && <MediaLibraryScreen state={state} dispatch={dispatch} />

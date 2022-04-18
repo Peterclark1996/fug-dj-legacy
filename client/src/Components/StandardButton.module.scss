@@ -8,22 +8,6 @@
     background-color: $buttonColourHover;
 }
 
-.toolTip {
-    position: relative;
-}
-
-.toolTip .toolTipText {
-    visibility: hidden;
-    text-align: center;
-    font-size: calc(5px + 1vmin);
-    position: absolute;
-    left: 125%;
-}
-
-.toolTip:hover .toolTipText {
-    visibility: visible;
-}
-
 .fixedSizeSmall {
     max-width: 20px;
     min-width: 20px;
@@ -36,4 +20,35 @@
     min-width: 50px;
     max-height: 50px;
     min-height: 50px;
+}
+
+.toolTip {
+    position: relative;
+}
+
+.toolTip .toolTipText {
+    visibility: hidden;
+    text-align: center;
+    font-size: calc(5px + 1vmin);
+    position: absolute;
+}
+
+.toolTip:hover .toolTipText {
+    visibility: visible;
+}
+
+.toolTip .toolTipLeft {
+    right: calc(100% + 0.5rem);
+}
+
+.toolTipText .toolTipLeft {
+    right: calc(100% + 0.5rem);
+}
+
+.toolTip .toolTipRight {
+    left: calc(100% + 0.5rem);
+}
+
+.toolTipText .toolTipRight {
+    left: calc(100% + 0.5rem);
 }

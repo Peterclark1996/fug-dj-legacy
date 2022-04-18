@@ -8,6 +8,7 @@ import { useReducer } from 'react'
 import Reducer from './Reducer/Reducer'
 import PageEnum from './Enums/PageEnum'
 import { RoomHubProvider } from './Hooks/RoomHubProvider'
+import { MediaQueueProvider } from './Hooks/MediaQueueProvider'
 
 const queryClient = new QueryClient()
 
@@ -23,9 +24,11 @@ const App = () => {
         <QueryClientProvider client={queryClient}>
             <ApiProvider>
                 <RoomHubProvider>
-                    <Loading isLoading={isLoading}>
-                        {isAuthenticated ? <MainScreen state={state} dispatch={dispatch} /> : <LoginScreen />}
-                    </ Loading>
+                    <MediaQueueProvider>
+                        <Loading isLoading={isLoading}>
+                            {isAuthenticated ? <MainScreen state={state} dispatch={dispatch} /> : <LoginScreen />}
+                        </ Loading>
+                    </MediaQueueProvider>
                 </RoomHubProvider>
             </ApiProvider>
         </QueryClientProvider>

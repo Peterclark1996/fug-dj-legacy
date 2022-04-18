@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import Player from "../Components/Player"
 import { useRoomHub } from "../Hooks/RoomHubProvider"
 import MediaPlayedData from "../Types/MediaPlayedData"
+import classes from "./Stage.module.scss"
 
 const Stage = () => {
     const { connection } = useRoomHub()
@@ -18,7 +19,7 @@ const Stage = () => {
     }, [connection, onPlayMedia])
 
     return (
-        <div className="d-flex flex-grow-1">
+        <div className={`d-flex ${classes.stretch}`}>
             {
                 currentlyPlayingMedia && <Player currentlyPlaying={currentlyPlayingMedia} />
             }
