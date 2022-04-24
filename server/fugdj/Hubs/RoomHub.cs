@@ -9,7 +9,7 @@ namespace fugdj.Hubs;
 
 public interface IRoomHub
 {
-    void PlayMedia(MediaBeingPlayedHttpDto mediaToPlay);
+    Task PlayMedia(MediaBeingPlayedHttpDto mediaToPlay);
 }
 
 public class RoomHub : Hub<IRoomHub>
