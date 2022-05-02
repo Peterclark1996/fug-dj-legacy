@@ -6,9 +6,11 @@ using fugdj.Dtos;
 using fugdj.Dtos.Db;
 using fugdj.Dtos.Http;
 using fugdj.Extensions;
+using fugdj.Integration;
+using fugdj.Repositories;
 using fugdj.Services;
 using fugdj.tests.Helpers;
-using fugdj.tests.Mocks;
+using Moq;
 using Shouldly;
 using Xunit;
 
@@ -33,15 +35,9 @@ public class UserTests
         );
         var mediaList = new List<MediaWithTagsDbDto> {mediaWithTags};
 
-        var userService = new UserService(
-            new UserRepositoryMock(
-                new List<UserDbDto> {new(userId, name, tags, mediaList)},
-                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(),
-                Common.CreateNotImplementedAction<string, MediaUpdateDbDto>(), 
-                Common.CreateNotImplementedAction<string, string>()
-            ),
-            new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
-        );
+        var userRepo = new Mock<IUserRepository>();
+        userRepo.Setup(u => u.GetUser(userId)).Returns(new UserDbDto(userId, name, tags, mediaList));
+        var userService = new UserService(userRepo.Object, new Mock<IYoutubeClient>().Object);
 
         var userController = new UserController(userService)
         {
@@ -66,15 +62,9 @@ public class UserTests
     [Fact]
     public void WhenGettingDataForAUserWithNoToken_401IsReturned()
     {
-        var userService = new UserService(
-            new UserRepositoryMock(
-                new List<UserDbDto>(),
-                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(),
-                Common.CreateNotImplementedAction<string, MediaUpdateDbDto>(), 
-                Common.CreateNotImplementedAction<string, string>()
-            ),
-            new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
-        );
+        var userRepo = new Mock<IUserRepository>();
+        userRepo.Setup(u => u.GetUser(It.IsAny<string>())).Throws(new Exception());
+        var userService = new UserService(userRepo.Object, new Mock<IYoutubeClient>().Object);
         var userController = new UserController(userService);
 
         Should.Throw<UnauthorisedException>(
@@ -85,15 +75,9 @@ public class UserTests
     [Fact]
     public void WhenGettingDataForAUserThatIsNotCreated_404IsReturned()
     {
-        var userService = new UserService(
-            new UserRepositoryMock(
-                new List<UserDbDto>(),
-                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(),
-                Common.CreateNotImplementedAction<string, MediaUpdateDbDto>(), 
-                Common.CreateNotImplementedAction<string, string>()
-            ),
-            new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
-        );
+        var userRepo = new Mock<IUserRepository>();
+        userRepo.Setup(u => u.GetUser(It.IsAny<string>())).Returns(value: null);
+        var userService = new UserService(userRepo.Object, new Mock<IYoutubeClient>().Object);
         var userController = new UserController(userService)
         {
             ControllerContext = Common.ContextWithAuthorizedUser(Common.UniqueString())
@@ -115,24 +99,17 @@ public class UserTests
         string? savedMediaUserId = null;
         MediaWithTagsDbDto? savedMedia = null;
 
-        var userService = new UserService(
-            new UserRepositoryMock(new List<UserDbDto>(), (user, media) =>
+        var userRepo = new Mock<IUserRepository>();
+        userRepo
+            .Setup(u => u.AddMediaForUser(It.IsAny<string>(), It.IsAny<MediaWithTagsDbDto>()))
+            .Callback<string, MediaWithTagsDbDto>((user, media) =>
             {
                 savedMediaUserId = user;
                 savedMedia = media;
-            }, 
-                Common.CreateNotImplementedAction<string, MediaUpdateDbDto>(), 
-                Common.CreateNotImplementedAction<string, string>()),
-            new YoutubeClientMock(mediaCode =>
-            {
-                if (mediaCode == code)
-                {
-                    return mediaInfo;
-                }
-
-                throw new Exception("Invalid media code");
-            })
-        );
+            });
+        var youtubeClient = new Mock<IYoutubeClient>();
+        youtubeClient.Setup(y => y.GetMediaInfo(code)).Returns(mediaInfo);
+        var userService = new UserService(userRepo.Object, youtubeClient.Object);
         var userController = new UserController(userService)
         {
             ControllerContext = Common.ContextWithAuthorizedUser(userId)
@@ -149,7 +126,7 @@ public class UserTests
         resultMedia.Media.DurationSeconds.ShouldBe(mediaInfo.DurationSeconds);
         resultMedia.TagIds.ShouldBeEmpty();
     }
-    
+
     [Fact]
     public void WhenDeletingMedia_MediaIsRemoved()
     {
@@ -159,18 +136,16 @@ public class UserTests
         string? deletedMediaUserId = null;
         string? deletedMedia = null;
 
-        var userService = new UserService(
-            new UserRepositoryMock(
-                new List<UserDbDto>(), 
-                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(), 
-                Common.CreateNotImplementedAction<string, MediaUpdateDbDto>(), 
+        var userRepo = new Mock<IUserRepository>();
+        userRepo
+            .Setup(u => u.DeleteMediaForUser(It.IsAny<string>(), It.IsAny<string>()))
+            .Callback<string, string>(
                 (user, media) =>
                 {
                     deletedMediaUserId = user;
                     deletedMedia = media;
-                }),
-            new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
-        );
+                });
+        var userService = new UserService(userRepo.Object, new Mock<IYoutubeClient>().Object);
         var userController = new UserController(userService)
         {
             ControllerContext = Common.ContextWithAuthorizedUser(userId)
@@ -182,32 +157,29 @@ public class UserTests
         var resultMedia = deletedMedia.ShouldNotBeNull();
         resultMedia.ShouldBe(mediaHashCode);
     }
-    
+
     [Fact]
     public void WhenUpdatingExistingMedia_MediaIsUpdated()
     {
         var mediaName = Common.UniqueString();
         var userId = Common.UniqueString();
         var mediaHashCode = $"y{Common.UniqueString()}";
-        var tags = new List<int> { 1, 5 };
+        var tags = new List<int> {1, 5};
         var mediaToUpdate = new MediaHttpDto(mediaName, mediaHashCode.GetPlayer(), mediaHashCode.GetCode(), tags);
 
         string? updatedMediaUserId = null;
         MediaUpdateDbDto? updatedMedia = null;
 
-        var userService = new UserService(
-            new UserRepositoryMock(
-                new List<UserDbDto>(), 
-                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(), 
+        var userRepo = new Mock<IUserRepository>();
+        userRepo
+            .Setup(u => u.UpdateMediaForUser(It.IsAny<string>(), It.IsAny<MediaUpdateDbDto>()))
+            .Callback<string, MediaUpdateDbDto>(
                 (user, media) =>
                 {
                     updatedMediaUserId = user;
                     updatedMedia = media;
-                }, 
-                Common.CreateNotImplementedAction<string, string>()
-                ),
-                new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
-        );
+                });
+        var userService = new UserService(userRepo.Object, new Mock<IYoutubeClient>().Object);
         var userController = new UserController(userService)
         {
             ControllerContext = Common.ContextWithAuthorizedUser(userId)
@@ -221,32 +193,29 @@ public class UserTests
         resultMedia.Name.ShouldBe(mediaName);
         resultMedia.TagIds.ToList().ShouldBeEquivalentTo(tags);
     }
-    
+
     [Fact]
     public void WhenUpdatingExistingMediaWithDuplicateTags_MediaIsUpdatedWithoutDuplicateTags()
     {
         var mediaName = Common.UniqueString();
         var userId = Common.UniqueString();
         var mediaHashCode = $"y{Common.UniqueString()}";
-        var tags = new List<int> { 1, 1 };
+        var tags = new List<int> {1, 1};
         var mediaToUpdate = new MediaHttpDto(mediaName, mediaHashCode.GetPlayer(), mediaHashCode.GetCode(), tags);
 
         string? updatedMediaUserId = null;
         MediaUpdateDbDto? updatedMedia = null;
 
-        var userService = new UserService(
-            new UserRepositoryMock(
-                new List<UserDbDto>(), 
-                Common.CreateNotImplementedAction<string, MediaWithTagsDbDto>(), 
+        var userRepo = new Mock<IUserRepository>();
+        userRepo
+            .Setup(u => u.UpdateMediaForUser(It.IsAny<string>(), It.IsAny<MediaUpdateDbDto>()))
+            .Callback<string, MediaUpdateDbDto>(
                 (user, media) =>
                 {
                     updatedMediaUserId = user;
                     updatedMedia = media;
-                }, 
-                Common.CreateNotImplementedAction<string, string>()
-            ),
-            new YoutubeClientMock(Common.CreateNotImplementedFunc<string, YoutubeMediaInfo>())
-        );
+                });
+        var userService = new UserService(userRepo.Object, new Mock<IYoutubeClient>().Object);
         var userController = new UserController(userService)
         {
             ControllerContext = Common.ContextWithAuthorizedUser(userId)
@@ -258,6 +227,6 @@ public class UserTests
         var resultMedia = updatedMedia.ShouldNotBeNull();
         resultMedia.HashCode.ShouldBe(mediaHashCode);
         resultMedia.Name.ShouldBe(mediaName);
-        resultMedia.TagIds.ToList().ShouldBeEquivalentTo(new List<int>{ 1 });
+        resultMedia.TagIds.ToList().ShouldBeEquivalentTo(new List<int> {1});
     }
 }

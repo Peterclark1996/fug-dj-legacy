@@ -13,10 +13,6 @@ public static class Common
 {
     public static string UniqueString() => Guid.NewGuid().ToString().Replace("-", "");
     
-    public static Func<T1, T2> CreateNotImplementedFunc<T1, T2>() => _ => throw new NotImplementedException();
-    
-    public static Action<T1, T2> CreateNotImplementedAction<T1, T2>() => (_, _) => throw new NotImplementedException();
-    
     public static T GetResponseObject<T>(this IActionResult result) where T : class
     {
         var response = result as OkObjectResult;

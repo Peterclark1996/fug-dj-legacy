@@ -4,9 +4,10 @@ using System.Linq;
 using fugdj.Controllers;
 using fugdj.Dtos.Db;
 using fugdj.Dtos.Http;
+using fugdj.Repositories;
 using fugdj.Services;
 using fugdj.tests.Helpers;
-using fugdj.tests.Mocks;
+using Moq;
 using Shouldly;
 using Xunit;
 
@@ -20,11 +21,13 @@ public class RoomTests
         var firstExpectedRoom = new RoomNameHttpDto(Guid.NewGuid(), Common.UniqueString());
         var secondExpectedRoom = new RoomNameHttpDto(Guid.NewGuid(), Common.UniqueString());
         
-        var roomService = new RoomService(new RoomRepositoryMock(new List<RoomDbDto>
+        var roomRepo = new Mock<IRoomRepository>();
+        roomRepo.Setup(r => r.GetAllRooms()).Returns(new List<RoomDbDto>
         {
             new(firstExpectedRoom.Id.ToString(), firstExpectedRoom.Name),
             new(secondExpectedRoom.Id.ToString(), secondExpectedRoom.Name)
-        }));
+        });
+        var roomService = new RoomService(roomRepo.Object);
         var roomController = new RoomController(roomService);
 
         var result = roomController.GetAll().GetResponseObject<IEnumerable<RoomNameHttpDto>>().ToList();
@@ -36,7 +39,9 @@ public class RoomTests
     [Fact]
     public void WhenGettingAllRooms_WhenNoneExist_EmptyListIsReturned()
     {
-        var roomService = new RoomService(new RoomRepositoryMock(new List<RoomDbDto>()));
+        var roomRepo = new Mock<IRoomRepository>();
+        roomRepo.Setup(r => r.GetAllRooms()).Returns(new List<RoomDbDto>());
+        var roomService = new RoomService(roomRepo.Object);
         var roomController = new RoomController(roomService);
 
         var result = roomController.GetAll().GetResponseObject<IEnumerable<RoomNameHttpDto>>();
@@ -48,8 +53,9 @@ public class RoomTests
     {
         var expectedRoom = new RoomNameHttpDto(Guid.NewGuid(), Common.UniqueString());
 
-        var roomService = new RoomService(new RoomRepositoryMock(new List<RoomDbDto>
-            {new(expectedRoom.Id.ToString(), expectedRoom.Name)}));
+        var roomRepo = new Mock<IRoomRepository>();
+        roomRepo.Setup(r => r.GetRoomData(expectedRoom.Id)).Returns(new RoomDbDto(expectedRoom.Id.ToString(), expectedRoom.Name));
+        var roomService = new RoomService(roomRepo.Object);
         var roomController = new RoomController(roomService);
 
         var result = roomController.Get(expectedRoom.Id.ToString()).GetResponseObject<RoomNameHttpDto>();
@@ -62,7 +68,11 @@ public class RoomTests
     {
         var nonExistingRoom = new RoomNameHttpDto(Guid.NewGuid(), Common.UniqueString());
 
-        var roomService = new RoomService(new RoomRepositoryMock(new List<RoomDbDto>()));
+        var roomRepo = new Mock<IRoomRepository>();
+        roomRepo
+            .Setup(r => r.GetRoomData(nonExistingRoom.Id))
+            .Returns(value: null);
+        var roomService = new RoomService(roomRepo.Object);
         var roomController = new RoomController(roomService);
 
         Should.Throw<ResourceNotFoundException>(
