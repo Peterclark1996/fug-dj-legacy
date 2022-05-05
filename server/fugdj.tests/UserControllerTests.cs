@@ -16,7 +16,7 @@ using Xunit;
 
 namespace fugdj.tests;
 
-public class UserTests
+public class UserControllerTests
 {
     [Fact]
     public void WhenGettingDataForAUser_UserDataIsReturned()
@@ -41,7 +41,7 @@ public class UserTests
 
         var userController = new UserController(userService)
         {
-            ControllerContext = Common.ContextWithAuthorizedUser(userId)
+            ControllerContext = Common.ControllerContextWithAuthorizedUser(userId)
         };
 
         var result = userController.Get().GetResponseObject<UserHttpDto>();
@@ -80,7 +80,7 @@ public class UserTests
         var userService = new UserService(userRepo.Object, new Mock<IYoutubeClient>().Object);
         var userController = new UserController(userService)
         {
-            ControllerContext = Common.ContextWithAuthorizedUser(Common.UniqueString())
+            ControllerContext = Common.ControllerContextWithAuthorizedUser(Common.UniqueString())
         };
 
         Should.Throw<ResourceNotFoundException>(
@@ -112,7 +112,7 @@ public class UserTests
         var userService = new UserService(userRepo.Object, youtubeClient.Object);
         var userController = new UserController(userService)
         {
-            ControllerContext = Common.ContextWithAuthorizedUser(userId)
+            ControllerContext = Common.ControllerContextWithAuthorizedUser(userId)
         };
 
         userController.AddMedia(mediaHashCode);
@@ -148,7 +148,7 @@ public class UserTests
         var userService = new UserService(userRepo.Object, new Mock<IYoutubeClient>().Object);
         var userController = new UserController(userService)
         {
-            ControllerContext = Common.ContextWithAuthorizedUser(userId)
+            ControllerContext = Common.ControllerContextWithAuthorizedUser(userId)
         };
 
         userController.DeleteMedia(mediaHashCode);
@@ -182,7 +182,7 @@ public class UserTests
         var userService = new UserService(userRepo.Object, new Mock<IYoutubeClient>().Object);
         var userController = new UserController(userService)
         {
-            ControllerContext = Common.ContextWithAuthorizedUser(userId)
+            ControllerContext = Common.ControllerContextWithAuthorizedUser(userId)
         };
 
         userController.UpdateMedia(mediaToUpdate);
@@ -218,7 +218,7 @@ public class UserTests
         var userService = new UserService(userRepo.Object, new Mock<IYoutubeClient>().Object);
         var userController = new UserController(userService)
         {
-            ControllerContext = Common.ContextWithAuthorizedUser(userId)
+            ControllerContext = Common.ControllerContextWithAuthorizedUser(userId)
         };
 
         userController.UpdateMedia(mediaToUpdate);

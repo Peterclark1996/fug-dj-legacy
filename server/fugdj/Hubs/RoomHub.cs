@@ -33,10 +33,9 @@ public class RoomHub : Hub<IRoomHub>
         if (mediaWithTags == null) return Task.CompletedTask;
 
         var room = _roomService.GetCurrentRoomState(roomId);
-        room.QueueMedia(mediaWithTags.Media, userId, () =>
+        room.QueueMedia(mediaWithTags.Media, userId, media =>
         {
-            Clients.Group(roomId.ToString()).PlayMedia(new MediaBeingPlayedHttpDto(mediaWithTags.Media.Name,
-                mediaWithTags.Media.Player, mediaWithTags.Media.Code, userId));
+            Clients.Group(roomId.ToString()).PlayMedia(media);
         });
 
         return Task.CompletedTask;

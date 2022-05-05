@@ -13,7 +13,7 @@ using Xunit;
 
 namespace fugdj.tests;
 
-public class RoomTests
+public class RoomControllerTests
 {
     [Fact]
     public void WhenGettingAllRooms_RoomsAreReturned()
