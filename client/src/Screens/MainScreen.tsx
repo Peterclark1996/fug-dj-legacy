@@ -26,7 +26,7 @@ const MainScreen = ({ state, dispatch }: MainScreenProps) => {
         if (userData) {
             dispatch({ type: ActionType.USER_DATA_RETRIEVED, userData })
         }
-    }, [userData])
+    }, [dispatch, userData])
 
     return (
         <div className={`d-flex flex-column ${classes.fullscreen} ${classes.background} ${classes.mainFont}`}>

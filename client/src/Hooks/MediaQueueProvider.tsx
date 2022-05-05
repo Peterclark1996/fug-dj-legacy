@@ -2,6 +2,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { createContext, useContext, useEffect, useState } from 'react'
 import MediaData from '../Types/MediaData'
 import MediaPlayedData from '../Types/MediaPlayedData'
+import NextMediaEvent from '../Types/NextMediaEvent'
 import { useRoomHub } from './RoomHubProvider'
 
 interface MediaQueueContextInterface {
@@ -35,28 +36,25 @@ export const MediaQueueProvider = (props: React.PropsWithChildren<unknown>) => {
     const removeFromQueue = (media: MediaData) => {
         setQueue(queue.filter(m => m.player !== media.player || m.code !== media.code))
 
-        if (queue.length > 1) {
+        if (queue.length > 1 && queue[0].player === media.player && queue[0].code === media.code) {
             connection?.send('QueueMedia', connectedRoomId, queue[1].player, queue[1].code)
         }
     }
 
-    const playMedia = (mediaToPlay: MediaPlayedData) => setCurrentlyPlaying(mediaToPlay)
-
     useEffect(() => {
-        if (!currentlyPlaying || queue.length === 0) return
+        const nextInQueue = queue[0]
 
-        if (user?.sub === currentlyPlaying.userId) {
-            const nextInQueue = queue[0]
-            if (nextInQueue.player === currentlyPlaying.player && nextInQueue.code === currentlyPlaying.code) {
-                setQueue(queue.slice(1))
-            }
-        }
-    }, [currentlyPlaying, queue])
+        if (!currentlyPlaying || !nextInQueue) return
+        if (currentlyPlaying.userId !== user?.sub) return
+        if (currentlyPlaying.player != nextInQueue.player || currentlyPlaying.code != nextInQueue.code) return
 
+        setQueue(queue.slice(1))
+        connection?.send('QueueMedia', connectedRoomId, nextInQueue.player, nextInQueue.code)
+    }, [connectedRoomId, connection, currentlyPlaying, queue, user?.sub])
 
     useEffect(() => {
         if (connection === undefined) return
-        connection.on('PlayMedia', playMedia)
+        connection.on('NextMedia', (nextMedia: NextMediaEvent) => setCurrentlyPlaying(nextMedia.upNext || undefined))
     }, [connection])
 
     const value = {

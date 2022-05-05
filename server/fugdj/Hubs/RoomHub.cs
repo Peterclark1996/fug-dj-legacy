@@ -1,4 +1,5 @@
 using fugdj.Dtos.Http;
+using fugdj.Dtos.Hub;
 using fugdj.Extensions;
 using fugdj.Repositories;
 using fugdj.Services;
@@ -9,7 +10,7 @@ namespace fugdj.Hubs;
 
 public interface IRoomHub
 {
-    Task PlayMedia(MediaBeingPlayedHttpDto mediaToPlay);
+    Task NextMedia(NextMediaHubDto mediaToPlay);
 }
 
 public class RoomHub : Hub<IRoomHub>
@@ -33,10 +34,11 @@ public class RoomHub : Hub<IRoomHub>
         if (mediaWithTags == null) return Task.CompletedTask;
 
         var room = _roomService.GetCurrentRoomState(roomId);
-        room.QueueMedia(mediaWithTags.Media, userId, media =>
-        {
-            Clients.Group(roomId.ToString()).PlayMedia(media);
-        });
+        room.QueueMedia(
+            mediaWithTags.Media,
+            userId,
+            media => Clients.Group(roomId.ToString()).NextMedia(media)
+        );
 
         return Task.CompletedTask;
     }
