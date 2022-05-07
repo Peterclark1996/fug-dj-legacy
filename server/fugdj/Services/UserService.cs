@@ -10,6 +10,7 @@ public interface IUserService
 {
     public UserHttpDto GetUser(string userId);
     public void AddMediaForUser(string userId, MediaHashCodeHttpDto mediaToAdd);
+    public void CreateTagForMedia(string userId, MediaHashCodeHttpDto mediaToAddTagTo, string tagName);
     public void UpdateMediaForUser(string userId, MediaHttpDto mediaToUpdate);
     public void DeleteMediaForUser(string userId, string mediaToAdd);
 }
@@ -47,6 +48,27 @@ public class UserService : IUserService
         var mediaInfo = _youtubeClient.GetMediaInfo(mediaToAdd.Code);
         var media = new MediaDbDto(hashCode, mediaInfo.Name, mediaInfo.DurationSeconds);
         _userRepository.AddMediaForUser(userId, new MediaWithTagsDbDto(media, new List<int>()));
+    }
+
+    public void CreateTagForMedia(string userId, MediaHashCodeHttpDto mediaToAddTagTo, string tagName)
+    {
+        //TODO Only pull back single media and tags
+        var user = _userRepository.GetUser(userId);
+        if (user == null) throw new ResourceNotFoundException();
+
+        //TODO Generate random hex colour
+        var newTag = new TagDbDto(user.TagList.Count, tagName, "#32a852");
+
+        var existingMedia =
+            user.MediaList.SingleOrDefault(m => m.Media.HashCode == mediaToAddTagTo.GetMediaHashCodeAsString());
+        if(existingMedia == null) throw new ResourceNotFoundException();
+
+        var updatedTagList = new List<int> {newTag.Id};
+        existingMedia.TagIds.ForEach(t => updatedTagList.Add(t));
+        
+        var updatedMedia = new MediaWithTagsDbDto(existingMedia.Media, updatedTagList);
+        
+        _userRepository.CreateTagForMedia(userId, updatedMedia, newTag);
     }
 
     public void UpdateMediaForUser(string userId, MediaHttpDto mediaToUpdate)

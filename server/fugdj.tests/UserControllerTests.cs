@@ -115,7 +115,7 @@ public class UserControllerTests
             ControllerContext = Common.ControllerContextWithAuthorizedUser(userId)
         };
 
-        userController.AddMedia(mediaHashCode);
+        userController.CreateMedia(mediaHashCode);
 
         savedMediaUserId.ShouldBe(userId);
         var resultMedia = savedMedia.ShouldNotBeNull();
@@ -228,5 +228,53 @@ public class UserControllerTests
         resultMedia.HashCode.ShouldBe(mediaHashCode);
         resultMedia.Name.ShouldBe(mediaName);
         resultMedia.TagIds.ToList().ShouldBeEquivalentTo(new List<int> {1});
+    }
+
+    [Fact]
+    public void WhenCreatingTagForExistingMedia_TagIsCreatedAndAddedToMedia()
+    {
+        var mediaName = Common.UniqueString();
+        var userId = Common.UniqueString();
+        var mediaHashCode = $"y{Common.UniqueString()}";
+
+        string? updatedMediaUserId = null;
+        MediaWithTagsDbDto? updatedMedia = null;
+        TagDbDto? newTag = null;
+
+        var userRepo = new Mock<IUserRepository>();
+        userRepo
+            .Setup(u => u.GetUser(userId))
+            .Returns(new UserDbDto(userId, "", new List<TagDbDto>(), new List<MediaWithTagsDbDto>
+            {
+                new(new MediaDbDto(mediaHashCode, "", 0), new List<int> {0})
+            }));
+        userRepo
+            .Setup(u => u.CreateTagForMedia(It.IsAny<string>(), It.IsAny<MediaWithTagsDbDto>(), It.IsAny<TagDbDto>()))
+            .Callback<string, MediaWithTagsDbDto, TagDbDto>(
+                (user, mediaUpdate, tag) =>
+                {
+                    updatedMediaUserId = user;
+                    updatedMedia = mediaUpdate;
+                    newTag = tag;
+                });
+        var userService = new UserService(userRepo.Object, new Mock<IYoutubeClient>().Object);
+        var userController = new UserController(userService)
+        {
+            ControllerContext = Common.ControllerContextWithAuthorizedUser(userId)
+        };
+
+        var mediaHashCodeObject = mediaHashCode.GetMediaHashCodeAsObject();
+        var expectedTagName = Common.UniqueString();
+        userController.CreateMediaTag(new CreateMediaTagHttpDto(
+            new MediaHashCodeHttpDto(mediaHashCodeObject.Player, mediaHashCodeObject.Code),
+            expectedTagName
+        ));
+
+        updatedMediaUserId.ShouldBe(userId);
+        var resultMedia = updatedMedia.ShouldNotBeNull();
+        resultMedia.TagIds.ToList().ShouldHaveCount(2);
+
+        var resultTag = newTag.ShouldNotBeNull();
+        resultTag.Name.ShouldBe(expectedTagName);
     }
 }

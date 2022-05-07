@@ -27,7 +27,7 @@ const MediaLibraryScreen = ({ state, dispatch }: LibraryScreenProps) => {
     const [playerCode, setPlayerCode] = useState("")
 
     const addMediaToUserMutation = useMutation(
-        () => apiPost(`user/addmedia`, { Player: playerType, Code: playerCode }),
+        () => apiPost(`user/createmedia`, { Player: playerType, Code: playerCode }),
         {
             onSuccess: () => {
                 queryClient.invalidateQueries(["user"])

@@ -27,10 +27,19 @@ public class UserController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public IActionResult AddMedia([FromBody] MediaHashCodeHttpDto mediaToAdd)
+    public IActionResult CreateMedia([FromBody] MediaHashCodeHttpDto mediaToAdd)
     {
         var userId = Request.GetAuthorizedUserId();
         _userService.AddMediaForUser(userId, mediaToAdd);
+        return Ok();
+    }
+    
+    [HttpPost]
+    [Authorize]
+    public IActionResult CreateMediaTag([FromBody] CreateMediaTagHttpDto tagToCreate)
+    {
+        var userId = Request.GetAuthorizedUserId();
+        _userService.CreateTagForMedia(userId, tagToCreate.MediaToAddTagTo, tagToCreate.TagName);
         return Ok();
     }
     

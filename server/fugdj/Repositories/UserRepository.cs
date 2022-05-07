@@ -10,6 +10,7 @@ public interface IUserRepository
 {
     public UserDbDto? GetUser(string userId);
     public void AddMediaForUser(string userId, MediaWithTagsDbDto mediaToAdd);
+    public void CreateTagForMedia(string userId, MediaWithTagsDbDto mediaUpdate, TagDbDto tag);
     public void UpdateMediaForUser(string userId, MediaUpdateDbDto mediaToUpdate);
     public void DeleteMediaForUser(string userId, string hashCode);
 }
@@ -52,6 +53,11 @@ public class UserRepository : IUserRepository
             Console.WriteLine(e);
             throw new InternalServerException();
         }
+    }
+
+    public void CreateTagForMedia(string userId, MediaWithTagsDbDto mediaUpdate, TagDbDto tag)
+    {
+        throw new NotImplementedException();
     }
 
     public void UpdateMediaForUser(string userId, MediaUpdateDbDto mediaToUpdate)
