@@ -10,7 +10,7 @@ public interface IUserRepository
 {
     public UserDbDto? GetUser(string userId);
     public void AddMediaForUser(string userId, MediaWithTagsDbDto mediaToAdd);
-    public void CreateTagForMedia(string userId, MediaWithTagsDbDto mediaUpdate, TagDbDto tag);
+    public void CreateTagForMedia(string userId, MediaUpdateDbDto mediaUpdate, TagDbDto tagToAdd);
     public void UpdateMediaForUser(string userId, MediaUpdateDbDto mediaToUpdate);
     public void DeleteMediaForUser(string userId, string hashCode);
 }
@@ -48,16 +48,37 @@ public class UserRepository : IUserRepository
         {
             collection.FindOneAndUpdate(filter, update);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine(e);
             throw new InternalServerException();
         }
     }
-
-    public void CreateTagForMedia(string userId, MediaWithTagsDbDto mediaUpdate, TagDbDto tag)
+    
+    public void CreateTagForMedia(string userId, MediaUpdateDbDto mediaToUpdate, TagDbDto tagToAdd)
     {
-        throw new NotImplementedException();
+        var collection = _dataSourceClient.GetCollection<UserDbDto>(UserCollectionName);
+
+        var encodedUserId = EncodeToBase64(userId);
+        var filter = Builders<UserDbDto>.Filter.Eq("_id", encodedUserId);
+        var update = Builders<UserDbDto>.Update
+            .Set("MediaList.$[mediaWithTags].TagIds", mediaToUpdate.TagIds)
+            .Push(u => u.TagList, tagToAdd);
+        var mediaFilter = new[]
+        {
+            new BsonDocumentArrayFilterDefinition<BsonDocument>(
+                new BsonDocument("mediaWithTags.Media.HashCode",
+                    new BsonDocument("$eq", new BsonString(mediaToUpdate.HashCode))))
+        };
+        try
+        {
+            collection.UpdateOne(filter, update, new UpdateOptions {ArrayFilters = mediaFilter});
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new InternalServerException();
+        }
     }
 
     public void UpdateMediaForUser(string userId, MediaUpdateDbDto mediaToUpdate)
@@ -77,9 +98,9 @@ public class UserRepository : IUserRepository
         };
         try
         {
-            collection.UpdateOne(filter, update, new UpdateOptions{ArrayFilters = mediaFilter});
+            collection.UpdateOne(filter, update, new UpdateOptions {ArrayFilters = mediaFilter});
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine(e);
             throw new InternalServerException();
@@ -98,11 +119,10 @@ public class UserRepository : IUserRepository
         {
             collection.FindOneAndUpdate(userFilter, delete);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine(e);
             throw new InternalServerException();
         }
-        
     }
 }

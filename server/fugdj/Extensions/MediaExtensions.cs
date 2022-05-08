@@ -14,7 +14,7 @@ public static class MediaExtensions
     }
 
     public static MediaHashCodeHttpDto GetMediaHashCodeAsObject(this string hashCode) =>
-        new MediaHashCodeHttpDto(hashCode.GetPlayer(), hashCode.GetCode());
+        new(hashCode.GetPlayer(), hashCode.GetCode());
 
     public static Player GetPlayer(this string hashCode)
     {

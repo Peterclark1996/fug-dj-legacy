@@ -14,6 +14,8 @@ const TagInput = ({ label, onLabelChange, availableTags, colourHex, onAddConfirm
 
     const tagsToShow = availableTags.filter(tag => tag.name.toLowerCase().includes(label.toLowerCase()))
 
+    const isLabelAnAvailableTag = availableTags.find(tag => tag.name.toLowerCase() === label.toLowerCase())
+
     return (
         <div className="d-flex position-relative flex-column">
             <div
@@ -45,6 +47,18 @@ const TagInput = ({ label, onLabelChange, availableTags, colourHex, onAddConfirm
                                     <span>{tag.name}</span>
                                 </div>
                             )
+                        }
+                        {
+                            label.length > 0 && !isLabelAnAvailableTag && <>
+                                <div className="border mb-1" />
+                                <div
+                                    className={`d-flex align-items-center px-1 mb-1 ${classes.rounded} ${classes.shadow} ${classes.smallFont}`}
+                                    role="button"
+                                    onClick={() => onLabelChange(label)}
+                                >
+                                    <span>{label}</span>
+                                </div>
+                            </>
                         }
                     </div>
                 </div>

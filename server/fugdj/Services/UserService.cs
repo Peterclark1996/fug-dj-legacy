@@ -57,18 +57,19 @@ public class UserService : IUserService
         if (user == null) throw new ResourceNotFoundException();
 
         //TODO Generate random hex colour
-        var newTag = new TagDbDto(user.TagList.Count, tagName, "#32a852");
+        var newTag = new TagDbDto(user.GetUnusedTagId(), tagName, "#32a852");
 
         var existingMedia =
             user.MediaList.SingleOrDefault(m => m.Media.HashCode == mediaToAddTagTo.GetMediaHashCodeAsString());
         if(existingMedia == null) throw new ResourceNotFoundException();
 
-        var updatedTagList = new List<int> {newTag.Id};
+        var updatedTagList = new HashSet<int>();
         existingMedia.TagIds.ForEach(t => updatedTagList.Add(t));
+        updatedTagList.Add(newTag.Id);
         
-        var updatedMedia = new MediaWithTagsDbDto(existingMedia.Media, updatedTagList);
+        var mediaUpdate = new MediaUpdateDbDto(existingMedia.Media.HashCode, existingMedia.Media.Name, updatedTagList);
         
-        _userRepository.CreateTagForMedia(userId, updatedMedia, newTag);
+        _userRepository.CreateTagForMedia(userId, mediaUpdate, newTag);
     }
 
     public void UpdateMediaForUser(string userId, MediaHttpDto mediaToUpdate)

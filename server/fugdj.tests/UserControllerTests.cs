@@ -233,24 +233,24 @@ public class UserControllerTests
     [Fact]
     public void WhenCreatingTagForExistingMedia_TagIsCreatedAndAddedToMedia()
     {
-        var mediaName = Common.UniqueString();
         var userId = Common.UniqueString();
         var mediaHashCode = $"y{Common.UniqueString()}";
 
         string? updatedMediaUserId = null;
-        MediaWithTagsDbDto? updatedMedia = null;
+        MediaUpdateDbDto? updatedMedia = null;
         TagDbDto? newTag = null;
 
         var userRepo = new Mock<IUserRepository>();
         userRepo
             .Setup(u => u.GetUser(userId))
-            .Returns(new UserDbDto(userId, "", new List<TagDbDto>(), new List<MediaWithTagsDbDto>
-            {
-                new(new MediaDbDto(mediaHashCode, "", 0), new List<int> {0})
-            }));
+            .Returns(new UserDbDto(userId, "", new List<TagDbDto> {new TagDbDto(0, "", "")},
+                new List<MediaWithTagsDbDto>
+                {
+                    new(new MediaDbDto(mediaHashCode, "", 0), new List<int> {0})
+                }));
         userRepo
-            .Setup(u => u.CreateTagForMedia(It.IsAny<string>(), It.IsAny<MediaWithTagsDbDto>(), It.IsAny<TagDbDto>()))
-            .Callback<string, MediaWithTagsDbDto, TagDbDto>(
+            .Setup(u => u.CreateTagForMedia(It.IsAny<string>(), It.IsAny<MediaUpdateDbDto>(), It.IsAny<TagDbDto>()))
+            .Callback<string, MediaUpdateDbDto, TagDbDto>(
                 (user, mediaUpdate, tag) =>
                 {
                     updatedMediaUserId = user;
@@ -272,6 +272,7 @@ public class UserControllerTests
 
         updatedMediaUserId.ShouldBe(userId);
         var resultMedia = updatedMedia.ShouldNotBeNull();
+        resultMedia.HashCode.ShouldBe(mediaHashCode);
         resultMedia.TagIds.ToList().ShouldHaveCount(2);
 
         var resultTag = newTag.ShouldNotBeNull();

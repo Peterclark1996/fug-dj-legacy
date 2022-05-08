@@ -30,7 +30,7 @@ const GetUrlForMedia = (media: MediaData) => {
 
 const Media = ({ media, userTags }: MediaProps) => {
     const queryClient = useQueryClient()
-    const { apiPatch, apiDelete } = useApi()
+    const { apiPost, apiPatch, apiDelete } = useApi()
     const { addToQueue } = useMediaQueue()
 
     const [isAddingTag, setIsAddingTag] = useState(false)
@@ -56,9 +56,13 @@ const Media = ({ media, userTags }: MediaProps) => {
 
     const onAddConfirmClick = () => {
         const tagToAdd = userTags.find(t => t.name.toLowerCase() === newTagLabel.toLowerCase())
-        if (tagToAdd === undefined) return
 
-        addMediaTagMutation.mutate(tagToAdd.id)
+        if (tagToAdd === undefined) {
+            createTagMutation.mutate()
+        } else {
+            addMediaTagMutation.mutate(tagToAdd.id)
+        }
+
         setIsAddingTag(false)
     }
 
@@ -68,6 +72,15 @@ const Media = ({ media, userTags }: MediaProps) => {
 
     const addMediaTagMutation = useMutation(
         (tagId: number) => apiPatch(`user/updatemedia`, { ...media, tags: [...media.tags, tagId] }),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(["user"])
+            }
+        }
+    )
+
+    const createTagMutation = useMutation(
+        () => apiPost(`user/createmediatag`, { mediaToAddTagTo: { player: media.player, code: media.code }, tagName: newTagLabel }),
         {
             onSuccess: () => {
                 queryClient.invalidateQueries(["user"])
