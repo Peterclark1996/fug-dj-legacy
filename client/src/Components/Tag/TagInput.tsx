@@ -1,69 +1,101 @@
+import { useCallback, useEffect, useRef, useState } from "react"
 import TagData from "../../Types/TagData"
 import classes from "./Tag.module.scss"
 
 type TagProps = {
-    label: string,
-    onLabelChange: (name: string) => void,
     availableTags: TagData[],
     colourHex: string,
-    onAddConfirmClick: () => void,
+    onAddConfirmClick: (name: string) => void,
     onAddCancelClick: () => void
 }
 
-const TagInput = ({ label, onLabelChange, availableTags, colourHex, onAddConfirmClick, onAddCancelClick }: TagProps) => {
+const KEY_CODE_ENTER = 13
+const KEY_CODE_BACKSPACE = 8
 
-    const tagsToShow = availableTags.filter(tag => tag.name.toLowerCase().includes(label.toLowerCase()))
+const TagInput = ({ availableTags, colourHex, onAddConfirmClick, onAddCancelClick }: TagProps) => {
+    const [newTagLabel, setNewTagLabel] = useState("")
+    const ref = useRef<HTMLDivElement>(null)
 
-    const isLabelAnAvailableTag = availableTags.find(tag => tag.name.toLowerCase() === label.toLowerCase())
+    const tagsToShow = availableTags.filter(tag => tag.name.toLowerCase().includes(newTagLabel.toLowerCase()))
+
+    const isLabelAnAvailableTag = availableTags.find(tag => tag.name.toLowerCase() === newTagLabel.toLowerCase())
+
+    const onKeyDown = (keyId: number) => {
+        if (keyId === KEY_CODE_ENTER) {
+            if (isLabelAnAvailableTag || newTagLabel.length > 0) {
+                onAddConfirmClick(newTagLabel)
+            } else {
+                onAddCancelClick()
+            }
+        }
+
+        if (keyId === KEY_CODE_BACKSPACE) {
+            if (newTagLabel.length === 0) {
+                onAddCancelClick()
+            }
+        }
+    }
+
+    const handleClickOutsideComponent = useCallback(e => {
+        if (!ref || !ref.current) return
+        if (ref.current.contains(e.target)) return
+        onAddCancelClick()
+    }, [onAddCancelClick])
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutsideComponent)
+        return () => document.removeEventListener("mousedown", handleClickOutsideComponent)
+    }, [handleClickOutsideComponent]);
 
     return (
-        <div className="d-flex position-relative flex-column">
+        <div className="d-flex position-relative align-items-center flex-column" ref={ref}>
             <div
-                className={`d-flex align-items-center px-1 me-1 ${classes.rounded} ${classes.shadow} ${classes.smallFont}`}
+                className={`d-flex align-items-center px-1 me-1 mb-1 ${classes.rounded} ${classes.shadow} ${classes.smallFont}`}
                 style={{ "backgroundColor": `#${colourHex}` }}
             >
                 <input
                     autoFocus
-                    className={`text-light rounded ${classes.inputField}`}
-                    value={label}
+                    className={`text-light rounded px-1 ${classes.inputField}`}
+                    value={newTagLabel}
                     type="text"
-                    onChange={event => onLabelChange(event.target.value)}
-                    style={{ "width": `${label.length}ch` }}
+                    onChange={event => setNewTagLabel(event.target.value)}
+                    style={{ "width": `${newTagLabel.length}ch` }}
+                    onKeyDown={event => onKeyDown(event.keyCode)}
                 />
-                <i className="ms-1 text-success fa-solid fa-circle-check" role="button" onClick={onAddConfirmClick} />
-                <i className="ms-1 text-danger fa-solid fa-circle-xmark" role="button" onClick={onAddCancelClick} />
             </div>
             <div className="ms-1">
-                <div className={`d-block position-absolute bg-secondary rounded px-1 pt-1 ${classes.shadow} ${classes.scrollable} ${classes.options}`}>
-                    <div className="d-flex flex-column">
+                <div className={`d-block position-absolute rounded px-1 pt-1 ${classes.shadow} ${classes.scrollable} ${classes.options}`}>
+                    <div className="d-flex flex-column align-items-center">
                         {
                             tagsToShow.map(tag =>
                                 <div
+                                    key={tag.id}
                                     className={`d-flex align-items-center px-1 mb-1 ${classes.rounded} ${classes.shadow} ${classes.smallFont}`}
                                     role="button"
                                     style={{ "backgroundColor": `#${tag.colourHex}` }}
-                                    onClick={() => onLabelChange(tag.name)}
+                                    onMouseDown={() => onAddConfirmClick(tag.name)}
                                 >
-                                    <span>{tag.name}</span>
+                                    <span className={classes.tagText}>{tag.name}</span>
                                 </div>
                             )
                         }
                         {
-                            label.length > 0 && !isLabelAnAvailableTag && <>
-                                <div className="border mb-1" />
+                            newTagLabel.length > 0 && !isLabelAnAvailableTag && <>
+                                {tagsToShow.length > 0 && <div className="w-100 border mb-1" />}
                                 <div
                                     className={`d-flex align-items-center px-1 mb-1 ${classes.rounded} ${classes.shadow} ${classes.smallFont}`}
                                     role="button"
-                                    onClick={() => onLabelChange(label)}
+                                    onClick={() => onAddConfirmClick(newTagLabel)}
                                 >
-                                    <span>{label}</span>
+                                    <span className={classes.tagText}>{newTagLabel}</span>
+                                    <i className="ms-1 text-light-grey fa-solid fa-plus" />
                                 </div>
                             </>
                         }
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

@@ -6,7 +6,7 @@ type LoadingProps = {
 const Loading = ({ isLoading, children }: LoadingProps) => {
     if (isLoading) {
         return (
-            <div className="w-100 h-100">
+            <div className="d-flex flex-column flex-grow-1">
                 <div className="d-flex justify-content-center">
                     <div className="spinner-border text-warning" />
                 </div>
@@ -15,7 +15,7 @@ const Loading = ({ isLoading, children }: LoadingProps) => {
         )
     }
     return (
-        <div>
+        <div className="d-flex flex-column flex-grow-1">
             {children}
         </div>
     )

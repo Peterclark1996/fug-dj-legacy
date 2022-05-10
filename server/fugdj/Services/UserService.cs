@@ -57,7 +57,7 @@ public class UserService : IUserService
         if (user == null) throw new ResourceNotFoundException();
 
         //TODO Generate random hex colour
-        var newTag = new TagDbDto(user.GetUnusedTagId(), tagName, "#32a852");
+        var newTag = new TagDbDto(user.GetUnusedTagId(), tagName, "32a852");
 
         var existingMedia =
             user.MediaList.SingleOrDefault(m => m.Media.HashCode == mediaToAddTagTo.GetMediaHashCodeAsString());

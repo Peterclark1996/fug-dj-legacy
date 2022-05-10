@@ -11,7 +11,7 @@ const AddTag = ({ onClick }: AddTagProps) => {
             role="button"
             onClick={onClick}
         >
-            <span>Add</span>
+            <span className={classes.tagText}>Add</span>
             <i className="ms-1 text-light-grey fa-solid fa-plus" />
         </div>
     )

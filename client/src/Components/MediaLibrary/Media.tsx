@@ -34,7 +34,6 @@ const Media = ({ media, userTags }: MediaProps) => {
     const { addToQueue } = useMediaQueue()
 
     const [isAddingTag, setIsAddingTag] = useState(false)
-    const [newTagLabel, setNewTagLabel] = useState("")
 
     const deleteMediaMutation = useMutation(
         () => apiDelete(`user/deletemedia?media=${BuildMediaResourceId(media.player, media.code)}`),
@@ -54,11 +53,11 @@ const Media = ({ media, userTags }: MediaProps) => {
         }
     )
 
-    const onAddConfirmClick = () => {
-        const tagToAdd = userTags.find(t => t.name.toLowerCase() === newTagLabel.toLowerCase())
+    const onAddConfirmClick = (tagName: string) => {
+        const tagToAdd = userTags.find(t => t.name.toLowerCase() === tagName.toLowerCase())
 
         if (tagToAdd === undefined) {
-            createTagMutation.mutate()
+            createTagMutation.mutate(tagName)
         } else {
             addMediaTagMutation.mutate(tagToAdd.id)
         }
@@ -80,7 +79,7 @@ const Media = ({ media, userTags }: MediaProps) => {
     )
 
     const createTagMutation = useMutation(
-        () => apiPost(`user/createmediatag`, { mediaToAddTagTo: { player: media.player, code: media.code }, tagName: newTagLabel }),
+        (tagName: string) => apiPost(`user/createmediatag`, { mediaToAddTagTo: { player: media.player, code: media.code }, tagName }),
         {
             onSuccess: () => {
                 queryClient.invalidateQueries(["user"])
@@ -89,12 +88,11 @@ const Media = ({ media, userTags }: MediaProps) => {
     )
 
     const onAddTagClick = () => {
-        setNewTagLabel("")
         setIsAddingTag(true)
     }
 
     return (
-        <div className={`d-flex flex-column m-1 p-1 user-select-none rounded ${classes.shadow}`}>
+        <div className={`d-flex flex-column m-1 p-2 user-select-none rounded ${classes.shadow}`}>
             <Loading isLoading={deleteMediaMutation.isLoading || deleteMediaTagMutation.isLoading}>
                 <div className="d-flex">
                     <span className={classes.largeFont}>{media.name}</span>
@@ -119,8 +117,6 @@ const Media = ({ media, userTags }: MediaProps) => {
                     {
                         isAddingTag ?
                             <TagInput
-                                label={newTagLabel}
-                                onLabelChange={setNewTagLabel}
                                 availableTags={userTags.filter(t => !media.tags.includes(t.id))}
                                 colourHex="d9d2e9"
                                 onAddConfirmClick={onAddConfirmClick}
