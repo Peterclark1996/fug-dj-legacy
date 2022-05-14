@@ -1,4 +1,4 @@
-import MediaData from "./MediaData"
+import MediaData from "./MediaData.d"
 import TagData from "./TagData"
 
 type UserData = {

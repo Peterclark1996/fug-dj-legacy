@@ -1,5 +1,5 @@
-import Logo from '../Components/Logo'
-import Title from '../Components/Title'
+import Logo from '../../Components/Logo'
+import Title from '../../Components/Title'
 import classes from './Header.module.scss'
 
 const Header = () => {

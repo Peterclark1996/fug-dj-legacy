@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import TagData from "../../Types/TagData"
+import TagData from "../../../Types/TagData"
 import classes from "./Tag.module.scss"
 
 type TagProps = {

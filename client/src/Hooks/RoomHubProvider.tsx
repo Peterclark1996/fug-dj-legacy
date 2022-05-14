@@ -23,7 +23,7 @@ const RoomHubContect = createContext<RoomHubInterface>({
     disconnectFromRoom: () => console.error("RoomHubProvider not initialized")
 })
 
-export const RoomHubProvider = (props: React.PropsWithChildren<{}>) => {
+export const RoomHubProvider = (props: React.PropsWithChildren<unknown>) => {
     const { getAccessTokenSilently } = useAuth0()
 
     const [connection, setConnection] = useState<HubConnection | undefined>(undefined)

@@ -10,11 +10,11 @@ const getApiUrl = () => {
 }
 
 interface ApiContextInterface {
-    apiGet: (url: string) => Promise<any>,
-    apiPost: (url: string, data: any) => Promise<any>,
-    apiPut: (url: string, data: any) => Promise<any>,
-    apiPatch: (url: string, data: any) => Promise<any>,
-    apiDelete: (url: string) => Promise<any>
+    apiGet: (url: string) => Promise<unknown>,
+    apiPost: (url: string, data: unknown) => Promise<unknown>,
+    apiPut: (url: string, data: unknown) => Promise<unknown>,
+    apiPatch: (url: string, data: unknown) => Promise<unknown>,
+    apiDelete: (url: string) => Promise<unknown>
 }
 
 const ApiContext = createContext<ApiContextInterface>({
@@ -25,7 +25,7 @@ const ApiContext = createContext<ApiContextInterface>({
     apiDelete: () => Promise.resolve({})
 })
 
-export const ApiProvider = (props: React.PropsWithChildren<{}>) => {
+export const ApiProvider = (props: React.PropsWithChildren<unknown>) => {
     const { getAccessTokenSilently } = useAuth0()
 
     const apiGet = (url: string) =>
@@ -33,17 +33,17 @@ export const ApiProvider = (props: React.PropsWithChildren<{}>) => {
             .then(token => axios.get(`${getApiUrl()}${url}`, { headers: { Authorization: `Bearer ${token}` } }))
             .then(res => res.data)
 
-    const apiPost = (url: string, data: any) =>
+    const apiPost = (url: string, data: unknown) =>
         getAccessTokenSilently()
             .then(token => axios.post(`${getApiUrl()}${url}`, data, { headers: { Authorization: `Bearer ${token}` } }))
             .then(res => res.data)
 
-    const apiPut = (url: string, data: any) =>
+    const apiPut = (url: string, data: unknown) =>
         getAccessTokenSilently()
             .then(token => axios.put(`${getApiUrl()}${url}`, data, { headers: { Authorization: `Bearer ${token}` } }))
             .then(res => res.data)
 
-    const apiPatch = (url: string, data: any) =>
+    const apiPatch = (url: string, data: unknown) =>
         getAccessTokenSilently()
             .then(token => axios.patch(`${getApiUrl()}${url}`, data, { headers: { Authorization: `Bearer ${token}` } }))
             .then(res => res.data)

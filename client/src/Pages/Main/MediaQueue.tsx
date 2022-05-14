@@ -1,5 +1,5 @@
-import StandardButton, { ButtonSize, ToolTipDirection } from '../Components/StandardButton'
-import { useMediaQueue } from '../Hooks/MediaQueueProvider'
+import StandardButton, { ButtonSize, ToolTipDirection } from '../../Components/StandardButton'
+import { useMediaQueue } from '../../Hooks/MediaQueueProvider'
 import classes from './MediaQueue.module.scss'
 
 const MediaQueue = () => {

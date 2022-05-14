@@ -1,8 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react"
-import Logo from "../Components/Logo"
-import StandardButton from "../Components/StandardButton"
-import Title from "../Components/Title"
-import classes from './Screen.module.scss'
+import Logo from "../../Components/Logo"
+import StandardButton from "../../Components/StandardButton"
+import Title from "../../Components/Title"
+import classes from '../Screen.module.scss'
 
 const LoginScreen = () => {
     const { loginWithRedirect } = useAuth0()

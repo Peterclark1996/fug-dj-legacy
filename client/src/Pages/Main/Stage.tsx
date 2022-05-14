@@ -1,5 +1,5 @@
-import Player from "../Components/Player"
-import { useMediaQueue } from "../Hooks/MediaQueueProvider"
+import Player from "../../Components/Player"
+import { useMediaQueue } from "../../Hooks/MediaQueueProvider"
 import classes from "./Stage.module.scss"
 
 const Stage = () => {

@@ -1,9 +1,9 @@
 import { useQuery } from 'react-query'
-import Loading from '../Components/Loading'
-import RoomButton from '../Components/RoomButton'
-import { useApi } from '../Hooks/ApiProvider'
-import { useRoomHub } from '../Hooks/RoomHubProvider'
-import RoomData from '../Types/RoomData'
+import Loading from '../../Components/Loading'
+import RoomButton from '../../Components/RoomButton'
+import { useApi } from '../../Hooks/ApiProvider'
+import { useRoomHub } from '../../Hooks/RoomHubProvider'
+import RoomData from '../../Types/RoomData'
 import classes from './RoomList.module.scss'
 
 const RoomList = () => {

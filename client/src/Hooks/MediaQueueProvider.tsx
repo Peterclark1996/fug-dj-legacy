@@ -64,7 +64,7 @@ export const MediaQueueProvider = (props: React.PropsWithChildren<unknown>) => {
         currentlyPlaying
     }
 
-    return <MediaQueueContext.Provider value={value} {...props} />
+    return <MediaQueueContext.Provider value={ value } {...props } />
 }
 
 export const useMediaQueue = () => useContext(MediaQueueContext)
