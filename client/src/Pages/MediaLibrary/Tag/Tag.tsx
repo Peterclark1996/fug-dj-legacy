@@ -9,7 +9,7 @@ type TagProps = {
 const Tag = ({ tag, onClick }: TagProps) => {
     return (
         <div
-            className={`d-flex align-items-center px-1 me-1 ${classes.rounded} ${classes.shadow} ${classes.smallFont}`}
+            className={`d-flex align-items-center px-1 me-1 mb-1 ${classes.rounded} ${classes.shadow} ${classes.smallFont}`}
             role="button"
             style={{ "backgroundColor": `#${tag.colourHex}` }}
             onClick={onClick}

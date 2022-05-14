@@ -104,7 +104,7 @@ const Media = ({ media, userTags }: MediaProps) => {
                         onClick={deleteMediaMutation.mutate}
                     />
                 </div>
-                <div className="d-flex my-1">
+                <div className="d-flex flex-wrap my-1">
                     {
                         media.tags
                             .map(tag => userTags.find(userTag => userTag.id === tag))
