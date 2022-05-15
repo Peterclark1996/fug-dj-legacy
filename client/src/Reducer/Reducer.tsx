@@ -13,8 +13,6 @@ const Reducer = (state: AppState, action: Action): AppState => {
                 ...state,
                 userData: action.userData
             }
-        default:
-            throw new Error(`Reducer action invalid: ${action.type}`)
     }
 }
 

@@ -52,9 +52,9 @@ public class UserController : ControllerBase
         return Ok();
     }
     
-    [HttpDelete]
+    [HttpPost]
     [Authorize]
-    public IActionResult DeleteMedia([FromQuery] string media)
+    public IActionResult DeleteMedia([FromBody] MediaHashCodeHttpDto media)
     {
         var userId = Request.GetAuthorizedUserId();
         _userService.DeleteMediaForUser(userId, media);

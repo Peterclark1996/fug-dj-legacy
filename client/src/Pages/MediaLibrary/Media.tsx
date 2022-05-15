@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "react-query"
 import PlayerEnum from "../../Enums/PlayerEnum"
 import { useApi } from "../../Hooks/ApiProvider"
-import { BuildMediaResourceId } from "../../Logic"
 import MediaData from "../../Types/MediaData.d"
 import TagData from "../../Types/TagData"
 import LinkButton from "./LinkButton"
@@ -13,6 +12,7 @@ import AddTag from "./Tag/AddTag"
 import { useState } from "react"
 import TagInput from "./Tag/TagInput"
 import { useMediaQueue } from "../../Hooks/MediaQueueProvider"
+import { Endpoint, getYoutubeUrl, Resource } from "../../Constants"
 
 type MediaProps = {
     media: MediaData,
@@ -22,7 +22,7 @@ type MediaProps = {
 const GetUrlForMedia = (media: MediaData) => {
     switch (media.player) {
         case 0:
-            return "https://www.youtube.com/watch?v=" + media.code
+            return getYoutubeUrl(media.code)
         default:
             throw new Error("Unknown player type")
     }
@@ -30,25 +30,25 @@ const GetUrlForMedia = (media: MediaData) => {
 
 const Media = ({ media, userTags }: MediaProps) => {
     const queryClient = useQueryClient()
-    const { apiPost, apiPatch, apiDelete } = useApi()
+    const { apiPost, apiPatch } = useApi()
     const { addToQueue } = useMediaQueue()
 
     const [isAddingTag, setIsAddingTag] = useState(false)
 
     const deleteMediaMutation = useMutation(
-        () => apiDelete(`user/deletemedia?media=${BuildMediaResourceId(media.player, media.code)}`),
+        () => apiPost(Endpoint.POST_DELETE_MEDIA, { player: media.player, code: media.code }),
         {
             onSuccess: () => {
-                queryClient.invalidateQueries(["user"])
+                queryClient.invalidateQueries([Resource.USER])
             }
         }
     )
 
     const deleteMediaTagMutation = useMutation(
-        (tagId: number) => apiPatch(`user/updatemedia`, { ...media, tags: media.tags.filter(t => t !== tagId) }),
+        (tagId: number) => apiPatch(Endpoint.PATCH_UPDATE_MEDIA, { ...media, tags: media.tags.filter(t => t !== tagId) }),
         {
             onSuccess: () => {
-                queryClient.invalidateQueries(["user"])
+                queryClient.invalidateQueries([Resource.USER])
             }
         }
     )
@@ -70,19 +70,19 @@ const Media = ({ media, userTags }: MediaProps) => {
     }
 
     const addMediaTagMutation = useMutation(
-        (tagId: number) => apiPatch(`user/updatemedia`, { ...media, tags: [...media.tags, tagId] }),
+        (tagId: number) => apiPatch(Endpoint.PATCH_UPDATE_MEDIA, { ...media, tags: [...media.tags, tagId] }),
         {
             onSuccess: () => {
-                queryClient.invalidateQueries(["user"])
+                queryClient.invalidateQueries([Resource.USER])
             }
         }
     )
 
     const createTagMutation = useMutation(
-        (tagName: string) => apiPost(`user/createmediatag`, { mediaToAddTagTo: { player: media.player, code: media.code }, tagName }),
+        (tagName: string) => apiPost(Endpoint.POST_CREATE_MEDIA_TAG, { mediaToAddTagTo: { player: media.player, code: media.code }, tagName }),
         {
             onSuccess: () => {
-                queryClient.invalidateQueries(["user"])
+                queryClient.invalidateQueries([Resource.USER])
             }
         }
     )

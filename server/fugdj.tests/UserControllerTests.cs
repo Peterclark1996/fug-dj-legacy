@@ -131,7 +131,7 @@ public class UserControllerTests
     public void WhenDeletingMedia_MediaIsRemoved()
     {
         var userId = Common.UniqueString();
-        var mediaHashCode = $"y{Common.UniqueString()}";
+        var mediaHashCode = new MediaHashCodeHttpDto(Player.Youtube, Common.UniqueString());
 
         string? deletedMediaUserId = null;
         string? deletedMedia = null;
@@ -155,7 +155,7 @@ public class UserControllerTests
 
         deletedMediaUserId.ShouldBe(userId);
         var resultMedia = deletedMedia.ShouldNotBeNull();
-        resultMedia.ShouldBe(mediaHashCode);
+        resultMedia.ShouldBe(mediaHashCode.GetMediaHashCodeAsString());
     }
 
     [Fact]

@@ -1,12 +1,13 @@
 import { useState, useEffect, createContext, useContext } from 'react'
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr'
 import { useAuth0 } from '@auth0/auth0-react'
+import { HubUrl } from '../Constants'
 
 const getHubUrl = () => {
-    if (process.env.NODE_ENV && process.env.NODE_ENV === 'production') {
-        return "https://localhost:7177/hub/room"
+    if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+        return HubUrl.DEV
     }
-    return "https://localhost:7177/hub/room"
+    return HubUrl.PROD
 }
 
 interface RoomHubInterface {

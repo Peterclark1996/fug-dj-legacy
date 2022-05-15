@@ -12,6 +12,7 @@ import { useApi } from '../../Hooks/ApiProvider'
 import UserData from '../../Types/UserData'
 import { useEffect } from 'react'
 import MediaQueue from './MediaQueue'
+import { Endpoint } from '../../Constants'
 
 type MainScreenProps = {
     state: AppState,
@@ -20,7 +21,7 @@ type MainScreenProps = {
 
 const MainScreen = ({ state, dispatch }: MainScreenProps) => {
     const { apiGet } = useApi()
-    const { data: userData } = useQuery<UserData, Error>("user", () => apiGet(`user/get`))
+    const { data: userData } = useQuery<UserData, Error>("user", () => apiGet(Endpoint.GET_USER))
 
     useEffect(() => {
         if (userData) {

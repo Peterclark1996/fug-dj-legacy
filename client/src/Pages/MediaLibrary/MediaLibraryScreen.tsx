@@ -11,6 +11,7 @@ import { useApi } from "../../Hooks/ApiProvider"
 import Action, { ActionType } from "../../Reducer/Action"
 import AppState from "../../Reducer/AppState"
 import classes from "./MediaLibraryScreen.module.scss"
+import { Endpoint, Resource } from "../../Constants"
 
 type LibraryScreenProps = {
     state: AppState,
@@ -27,10 +28,10 @@ const MediaLibraryScreen = ({ state, dispatch }: LibraryScreenProps) => {
     const [playerCode, setPlayerCode] = useState("")
 
     const addMediaToUserMutation = useMutation(
-        () => apiPost(`user/createmedia`, { Player: playerType, Code: playerCode }),
+        () => apiPost(Endpoint.POST_CREATE_MEDIA, { Player: playerType, Code: playerCode }),
         {
             onSuccess: () => {
-                queryClient.invalidateQueries(["user"])
+                queryClient.invalidateQueries([Resource.USER])
             }
         }
     )
