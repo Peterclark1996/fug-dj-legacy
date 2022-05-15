@@ -11,8 +11,8 @@ public interface IUserService
     public UserHttpDto GetUser(string userId);
     public void AddMediaForUser(string userId, MediaHashCodeHttpDto mediaToAdd);
     public void CreateTagForMedia(string userId, MediaHashCodeHttpDto mediaToAddTagTo, string tagName);
-    public void UpdateMediaForUser(string userId, MediaHttpDto mediaToUpdate);
-    public void DeleteMediaForUser(string userId, MediaHashCodeHttpDto mediaToDelete);
+    public void UpdateMediaForUser(string userId, MediaUpdateHttpDto mediaUpdate, MediaHashCodeHttpDto mediaId);
+    public void DeleteMediaForUser(string userId, MediaHashCodeHttpDto mediaId);
 }
 
 public class UserService : IUserService
@@ -71,14 +71,14 @@ public class UserService : IUserService
         _userRepository.CreateTagForMedia(userId, mediaUpdate, newTag);
     }
 
-    public void UpdateMediaForUser(string userId, MediaHttpDto mediaToUpdate)
+    public void UpdateMediaForUser(string userId, MediaUpdateHttpDto mediaUpdate, MediaHashCodeHttpDto mediaId)
     {
-        var hashCode = new MediaHashCodeHttpDto(mediaToUpdate.Player, mediaToUpdate.Code).GetMediaHashCodeAsString();
-        _userRepository.UpdateMediaForUser(userId, new MediaUpdateDbDto(hashCode, mediaToUpdate.Name, new HashSet<int>(mediaToUpdate.Tags)));
+        var hashCode = new MediaHashCodeHttpDto(mediaId.Player, mediaId.Code).GetMediaHashCodeAsString();
+        _userRepository.UpdateMediaForUser(userId, new MediaUpdateDbDto(hashCode, mediaUpdate.Name, new HashSet<int>(mediaUpdate.Tags)));
     }
 
-    public void DeleteMediaForUser(string userId, MediaHashCodeHttpDto mediaToDelete)
+    public void DeleteMediaForUser(string userId, MediaHashCodeHttpDto mediaId)
     {
-        _userRepository.DeleteMediaForUser(userId, mediaToDelete.GetMediaHashCodeAsString());
+        _userRepository.DeleteMediaForUser(userId, mediaId.GetMediaHashCodeAsString());
     }
 }

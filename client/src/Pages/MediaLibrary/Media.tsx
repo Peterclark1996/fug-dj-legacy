@@ -12,7 +12,7 @@ import AddTag from "./Tag/AddTag"
 import { useState } from "react"
 import TagInput from "./Tag/TagInput"
 import { useMediaQueue } from "../../Hooks/MediaQueueProvider"
-import { Endpoint, getYoutubeUrl, Resource } from "../../Constants"
+import { Endpoint, getMediaUrl, getYoutubeUrl, Resource } from "../../Constants"
 
 type MediaProps = {
     media: MediaData,
@@ -30,13 +30,13 @@ const GetUrlForMedia = (media: MediaData) => {
 
 const Media = ({ media, userTags }: MediaProps) => {
     const queryClient = useQueryClient()
-    const { apiPost, apiPatch } = useApi()
+    const { apiPost, apiPatch, apiDelete } = useApi()
     const { addToQueue } = useMediaQueue()
 
     const [isAddingTag, setIsAddingTag] = useState(false)
 
     const deleteMediaMutation = useMutation(
-        () => apiPost(Endpoint.POST_DELETE_MEDIA, { player: media.player, code: media.code }),
+        () => apiDelete(getMediaUrl(media.player, media.code)),
         {
             onSuccess: () => {
                 queryClient.invalidateQueries([Resource.USER])
@@ -45,7 +45,7 @@ const Media = ({ media, userTags }: MediaProps) => {
     )
 
     const deleteMediaTagMutation = useMutation(
-        (tagId: number) => apiPatch(Endpoint.PATCH_UPDATE_MEDIA, { ...media, tags: media.tags.filter(t => t !== tagId) }),
+        (tagId: number) => apiPatch(getMediaUrl(media.player, media.code), { name: media.name, tags: media.tags.filter(t => t !== tagId) }),
         {
             onSuccess: () => {
                 queryClient.invalidateQueries([Resource.USER])
@@ -70,7 +70,7 @@ const Media = ({ media, userTags }: MediaProps) => {
     }
 
     const addMediaTagMutation = useMutation(
-        (tagId: number) => apiPatch(Endpoint.PATCH_UPDATE_MEDIA, { ...media, tags: [...media.tags, tagId] }),
+        (tagId: number) => apiPatch(getMediaUrl(media.player, media.code), { name: media.name, tags: [...media.tags, tagId] }),
         {
             onSuccess: () => {
                 queryClient.invalidateQueries([Resource.USER])

@@ -12,7 +12,7 @@ import { useApi } from '../../Hooks/ApiProvider'
 import UserData from '../../Types/UserData'
 import { useEffect } from 'react'
 import MediaQueue from './MediaQueue'
-import { Endpoint } from '../../Constants'
+import { Endpoint, Resource } from '../../Constants'
 
 type MainScreenProps = {
     state: AppState,
@@ -21,7 +21,7 @@ type MainScreenProps = {
 
 const MainScreen = ({ state, dispatch }: MainScreenProps) => {
     const { apiGet } = useApi()
-    const { data: userData } = useQuery<UserData, Error>("user", () => apiGet(Endpoint.GET_USER))
+    const { data: userData } = useQuery<UserData, Error>(Resource.USER, () => apiGet(Endpoint.GET_USER))
 
     useEffect(() => {
         if (userData) {
@@ -35,7 +35,7 @@ const MainScreen = ({ state, dispatch }: MainScreenProps) => {
             <div className="d-flex flex-grow-1">
                 <div className="d-flex flex-column">
                     <RoomList />
-                    <UserActions state={state} dispatch={dispatch} />
+                    <UserActions dispatch={dispatch} />
                 </div>
                 <Stage />
                 <MediaQueue />

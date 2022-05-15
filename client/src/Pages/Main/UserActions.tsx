@@ -2,15 +2,13 @@ import { useAuth0 } from "@auth0/auth0-react"
 import StandardButton, { ButtonSize } from "../../Components/StandardButton"
 import PageEnum from "../../Enums/PageEnum"
 import Action, { ActionType } from "../../Reducer/Action"
-import AppState from "../../Reducer/AppState"
 import classes from './UserActions.module.scss'
 
 type UserActionsProps = {
-    state: AppState,
     dispatch: React.Dispatch<Action>
 }
 
-const UserActions = ({ state, dispatch }: UserActionsProps) => {
+const UserActions = ({ dispatch }: UserActionsProps) => {
     const { user, logout } = useAuth0()
     const onLibraryClick = () => dispatch({ type: ActionType.SELECTED_PAGE_UPDATED, updatedPage: PageEnum.Library })
 

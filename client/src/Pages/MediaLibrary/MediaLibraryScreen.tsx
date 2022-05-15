@@ -11,7 +11,7 @@ import { useApi } from "../../Hooks/ApiProvider"
 import Action, { ActionType } from "../../Reducer/Action"
 import AppState from "../../Reducer/AppState"
 import classes from "./MediaLibraryScreen.module.scss"
-import { Endpoint, Resource } from "../../Constants"
+import { getMediaUrl, Resource } from "../../Constants"
 
 type LibraryScreenProps = {
     state: AppState,
@@ -28,7 +28,7 @@ const MediaLibraryScreen = ({ state, dispatch }: LibraryScreenProps) => {
     const [playerCode, setPlayerCode] = useState("")
 
     const addMediaToUserMutation = useMutation(
-        () => apiPost(Endpoint.POST_CREATE_MEDIA, { Player: playerType, Code: playerCode }),
+        (player: PlayerEnum) => apiPost(getMediaUrl(player, playerCode)),
         {
             onSuccess: () => {
                 queryClient.invalidateQueries([Resource.USER])
@@ -70,6 +70,11 @@ const MediaLibraryScreen = ({ state, dispatch }: LibraryScreenProps) => {
 
     const onCloseClick = () => dispatch({ type: ActionType.SELECTED_PAGE_UPDATED, updatedPage: PageEnum.Home })
 
+    const onAddClick = () => {
+        if (playerType === undefined || playerCode === "") return
+        addMediaToUserMutation.mutate(playerType)
+    }
+
     return (
         <Overlay classname="d-flex flex-column" onOutsideClick={onCloseClick}>
             <div className={`d-flex justify-content-between align-items-center p-2 rounded-top ${classes.background} ${classes.shadow}`}>
@@ -86,7 +91,7 @@ const MediaLibraryScreen = ({ state, dispatch }: LibraryScreenProps) => {
             <div className={`d-flex align-items-center p-2 rounded-bottom ${classes.background} ${classes.shadow}`}>
                 <Input className="mx-2" placeholder="Paste a link here" value={mediaUrl} onChange={onChangeMediaUrl} isValid={mediaUrl === "" || isMediaUrlValid} />
                 <Loading isLoading={addMediaToUserMutation.isLoading}>
-                    <StandardButton className="m-2" text="Add" textClasses={classes.largeFont} iconClasses="fa-solid fa-plus fa-2xl" onClick={addMediaToUserMutation.mutate} />
+                    <StandardButton className="m-2" text="Add" textClasses={classes.largeFont} iconClasses="fa-solid fa-plus fa-2xl" onClick={onAddClick} />
                 </Loading>
             </div>
         </Overlay>

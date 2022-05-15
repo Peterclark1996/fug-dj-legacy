@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query'
 import Loading from '../../Components/Loading'
 import RoomButton from '../../Components/RoomButton'
-import { Endpoint } from '../../Constants'
+import { Endpoint, Resource } from '../../Constants'
 import { useApi } from '../../Hooks/ApiProvider'
 import { useRoomHub } from '../../Hooks/RoomHubProvider'
 import RoomData from '../../Types/RoomData'
@@ -10,7 +10,7 @@ import classes from './RoomList.module.scss'
 const RoomList = () => {
     const { connectedRoomId, connectToRoom } = useRoomHub()
     const { apiGet } = useApi()
-    const { isLoading, error, data: rooms } = useQuery<RoomData[], Error>("rooms", () => apiGet(Endpoint.GET_ALL_ROOMS))
+    const { isLoading, error, data: rooms } = useQuery<RoomData[], Error>(Resource.ROOMS, () => apiGet(Endpoint.GET_ALL_ROOMS))
 
     const onRoomButtonClick = (roomId: string) => {
         connectToRoom(roomId)

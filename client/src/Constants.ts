@@ -1,14 +1,25 @@
+import PlayerEnum from "./Enums/PlayerEnum"
+
 export enum Endpoint {
     GET_USER = "user/get",
     GET_ALL_ROOMS = "rooms/getall",
-    POST_CREATE_MEDIA_TAG = "user/createmediatag",
-    POST_CREATE_MEDIA = "user/createmedia",
-    POST_DELETE_MEDIA = "user/deletemedia",
-    PATCH_UPDATE_MEDIA = "user/updatemedia"
+    POST_CREATE_MEDIA_TAG = "user/createmediatag"
+}
+
+export const getMediaUrl = (player: PlayerEnum, code: string) => `media/${getMediaId(player, code)}`
+
+const getMediaId = (player: PlayerEnum, code: string) => {
+    switch (player) {
+        case PlayerEnum.Youtube:
+            return `y${code}`
+        default:
+            throw new Error("Unknown player type")
+    }
 }
 
 export enum Resource {
-    USER = "user"
+    USER = "user",
+    ROOMS = "rooms"
 }
 
 export enum ApiUrl {
