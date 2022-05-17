@@ -88,6 +88,36 @@ public class UserControllerTests
     }
 
     [Fact]
+    public void WhenUpdatingUsersUsername_UsersUsernameIsUpdated()
+    {
+        var userId = Common.UniqueString();
+
+        string? updatedUserId = null;
+        string? updatedUsername = null;
+
+        var userRepo = new Mock<IUserRepository>();
+        userRepo
+            .Setup(u => u.UpdateUser(It.IsAny<string>(), It.IsAny<UserUpdateDbDto>()))
+            .Callback<string, UserUpdateDbDto>(
+                (user, update) =>
+                {
+                    updatedUserId = user;
+                    updatedUsername = update.Name;
+                });
+        var userService = new UserService(userRepo.Object, new Mock<IYoutubeClient>().Object);
+        var userController = new UserController(userService)
+        {
+            ControllerContext = Common.ControllerContextWithAuthorizedUser(userId)
+        };
+
+        var usernameToUpdateTo = Common.UniqueString();
+        userController.UpdateUser(new UserUpdateHttpDto(usernameToUpdateTo));
+
+        updatedUserId.ShouldBe(userId);
+        updatedUsername.ShouldBe(usernameToUpdateTo);
+    }
+
+    [Fact]
     public void WhenCreatingTagForExistingMedia_TagIsCreatedAndAddedToMedia()
     {
         var userId = Common.UniqueString();

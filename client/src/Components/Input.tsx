@@ -4,12 +4,12 @@ type InputProps = {
     className?: string,
     value: string,
     onChange: (value: string) => void,
-    placeholder: string,
+    placeholder?: string,
     isValid?: boolean,
     isEnabled?: boolean
 }
 
-const Input = ({ className = "", value, onChange, placeholder, isValid = true, isEnabled = true }: InputProps) => {
+const Input = ({ className = "", value, onChange, placeholder = "", isValid = true, isEnabled = true }: InputProps) => {
     return (
         <input
             className={`${className} rounded ${classes.inputField} ${!isValid && classes.inputInvalid}`}

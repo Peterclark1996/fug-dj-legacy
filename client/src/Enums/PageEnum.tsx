@@ -1,5 +1,6 @@
 enum PageEnum {
     Home,
+    Profile,
     Library
 }
 

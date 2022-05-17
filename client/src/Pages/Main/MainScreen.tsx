@@ -13,6 +13,7 @@ import UserData from '../../Types/UserData'
 import { useEffect } from 'react'
 import MediaQueue from './MediaQueue'
 import { Endpoint, Resource } from '../../Constants'
+import ProfileScreen from '../Profile/ProfileScreen'
 
 type MainScreenProps = {
     state: AppState,
@@ -42,6 +43,9 @@ const MainScreen = ({ state, dispatch }: MainScreenProps) => {
             </div>
             {
                 state.selectedPage === PageEnum.Library && <MediaLibraryScreen state={state} dispatch={dispatch} />
+            }
+            {
+                state.selectedPage === PageEnum.Profile && <ProfileScreen state={state} dispatch={dispatch} />
             }
         </div>
     )

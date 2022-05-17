@@ -12,6 +12,7 @@ public interface IUserService
     public void AddMediaForUser(string userId, MediaHashCodeHttpDto mediaToAdd);
     public void CreateTagForMedia(string userId, MediaHashCodeHttpDto mediaToAddTagTo, string tagName);
     public void UpdateMediaForUser(string userId, MediaUpdateHttpDto mediaUpdate, MediaHashCodeHttpDto mediaId);
+    public void UpdateUser(string userId, UserUpdateHttpDto userUpdate);
     public void DeleteMediaForUser(string userId, MediaHashCodeHttpDto mediaId);
 }
 
@@ -75,6 +76,11 @@ public class UserService : IUserService
     {
         var hashCode = new MediaHashCodeHttpDto(mediaId.Player, mediaId.Code).GetMediaHashCodeAsString();
         _userRepository.UpdateMediaForUser(userId, new MediaUpdateDbDto(hashCode, mediaUpdate.Name, new HashSet<int>(mediaUpdate.Tags)));
+    }
+
+    public void UpdateUser(string userId, UserUpdateHttpDto userUpdate)
+    {
+        _userRepository.UpdateUser(userId, new UserUpdateDbDto(userUpdate.Name));
     }
 
     public void DeleteMediaForUser(string userId, MediaHashCodeHttpDto mediaId)

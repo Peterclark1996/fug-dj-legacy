@@ -9,7 +9,7 @@ type OverlayProps = {
 const Overlay = ({ children, classname = "", onOutsideClick }: OverlayProps) => {
     return (
         <div className={`${classes.overlayBackground} position-fixed w-100 h-100`} onClick={onOutsideClick}>
-            <div className={`${classname} ${classes.overlay} rounded`} onClick={e => e.stopPropagation()}>
+            <div className={`${classname} ${classes.overlayThin} rounded`} onClick={e => e.stopPropagation()}>
                 {children}
             </div>
         </div >
