@@ -1,17 +1,20 @@
-﻿namespace fugdj.Dtos.Db;
+﻿using System.Collections.Generic;
 
-public class UserDbDto
+namespace fugdj.Dtos.Db
 {
-    public string Id { get; }
-    public string Name { get; }
-    public List<TagDbDto> TagList { get; }
-    public List<MediaWithTagsDbDto> MediaList { get; }
-        
-    public UserDbDto(string id, string name, List<TagDbDto> tagList, List<MediaWithTagsDbDto> mediaList)
+    public class UserDbDto
     {
-        Id = id;
-        Name = name;
-        TagList = tagList;
-        MediaList = mediaList;
+        public string Id { get; }
+        public string Name { get; }
+        public List<TagDbDto> TagList { get; }
+        public List<MediaWithTagsDbDto> MediaList { get; }
+        
+        public UserDbDto(string id, string name, List<TagDbDto> tagList, List<MediaWithTagsDbDto> mediaList)
+        {
+            Id = id;
+            Name = name;
+            TagList = tagList;
+            MediaList = mediaList;
+        }
     }
 }

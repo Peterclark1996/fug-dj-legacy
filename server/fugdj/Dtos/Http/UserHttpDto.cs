@@ -1,15 +1,18 @@
-﻿namespace fugdj.Dtos.Http;
+﻿using System.Collections.Generic;
 
-public class UserHttpDto
+namespace fugdj.Dtos.Http
 {
-    public string Name { get; }
-    public List<TagHttpDto> Tags { get; }
-    public List<MediaHttpDto> Media { get; }
-
-    public UserHttpDto(string name, List<TagHttpDto> tags, List<MediaHttpDto> media)
+    public class UserHttpDto
     {
-        Name = name;
-        Tags = tags;
-        Media = media;
+        public string Name { get; }
+        public List<TagHttpDto> Tags { get; }
+        public List<MediaHttpDto> Media { get; }
+
+        public UserHttpDto(string name, List<TagHttpDto> tags, List<MediaHttpDto> media)
+        {
+            Name = name;
+            Tags = tags;
+            Media = media;
+        }
     }
 }

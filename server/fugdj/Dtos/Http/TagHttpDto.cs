@@ -1,15 +1,16 @@
-﻿namespace fugdj.Dtos.Http;
-
-public class TagHttpDto
+﻿namespace fugdj.Dtos.Http
 {
-    public int Id { get; }
-    public string Name { get; }
-    public string ColourHex { get; }
-
-    public TagHttpDto(int id, string name, string colourHex)
+    public class TagHttpDto
     {
-        Id = id;
-        Name = name;
-        ColourHex = colourHex;
+        public int Id { get; }
+        public string Name { get; }
+        public string ColourHex { get; }
+
+        public TagHttpDto(int id, string name, string colourHex)
+        {
+            Id = id;
+            Name = name;
+            ColourHex = colourHex;
+        }
     }
 }

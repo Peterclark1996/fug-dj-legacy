@@ -1,9 +1,13 @@
+using System.Threading.Tasks;
 using fugdj;
 using fugdj.Hubs;
 using fugdj.Integration;
 using fugdj.Repositories;
 using fugdj.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 const string corsDomainPolicy = "CorsDomainPolicy";
 

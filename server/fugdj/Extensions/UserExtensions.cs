@@ -1,20 +1,22 @@
+using System.Linq;
 using fugdj.Dtos.Db;
 
-namespace fugdj.Extensions;
-
-public static class UserExtensions
+namespace fugdj.Extensions
 {
-    public static int GetUnusedTagId(this UserDbDto user)
+    public static class UserExtensions
     {
-        var userTagIds = user.TagList.Select(t => t.Id).ToList();
-        for (var i = 0; i < userTagIds.Count + 1; i++)
+        public static int GetUnusedTagId(this UserDbDto user)
         {
-            if (!userTagIds.Contains(i))
+            var userTagIds = user.TagList.Select(t => t.Id).ToList();
+            for (var i = 0; i < userTagIds.Count + 1; i++)
             {
-                return i;
+                if (!userTagIds.Contains(i))
+                {
+                    return i;
+                }
             }
-        }
 
-        throw new InternalServerException();
+            throw new InternalServerException();
+        }
     }
 }

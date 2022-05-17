@@ -1,20 +1,21 @@
 ﻿using fugdj.Dtos.Http;
 using fugdj.Extensions;
 
-namespace fugdj.Dtos.Db;
-
-public class MediaDbDto
+namespace fugdj.Dtos.Db
 {
-    public string HashCode { get; }
-    public string Name { get; }
-    public int DurationSeconds { get; }
-    public Player Player => HashCode.GetPlayer();
-    public string Code => HashCode.GetCode();
-        
-    public MediaDbDto(string hashCode, string name, int durationSeconds)
+    public class MediaDbDto
     {
-        HashCode = hashCode;
-        Name = name;
-        DurationSeconds = durationSeconds;
+        public string HashCode { get; }
+        public string Name { get; }
+        public int DurationSeconds { get; }
+        public Player Player => HashCode.GetPlayer();
+        public string Code => HashCode.GetCode();
+        
+        public MediaDbDto(string hashCode, string name, int durationSeconds)
+        {
+            HashCode = hashCode;
+            Name = name;
+            DurationSeconds = durationSeconds;
+        }
     }
 }

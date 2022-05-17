@@ -1,36 +1,40 @@
+using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 
-namespace fugdj.Extensions;
-
-public static class RequestExtensions
+namespace fugdj.Extensions
 {
-    public static string GetAuthorizedUserId(this HttpRequest request)
+    public static class RequestExtensions
     {
-        try
+        public static string GetAuthorizedUserId(this HttpRequest request)
         {
-            var token = request.Headers["Authorization"].ToString()
-                .Replace("bearer ", "", StringComparison.CurrentCultureIgnoreCase);
-            var handler = new JwtSecurityTokenHandler();
-            var jwtSecurityToken = handler.ReadJwtToken(token);
+            try
+            {
+                var token = request.Headers["Authorization"].ToString()
+                    .Replace("bearer ", "", StringComparison.CurrentCultureIgnoreCase);
+                var handler = new JwtSecurityTokenHandler();
+                var jwtSecurityToken = handler.ReadJwtToken(token);
 
-            var userId = jwtSecurityToken.Claims.First(x => x.Type == "sub").Value;
+                var userId = jwtSecurityToken.Claims.First(x => x.Type == "sub").Value;
+
+                return userId;
+            }
+            catch (Exception)
+            {
+                throw new UnauthorisedException();
+            }
+        }
+
+        public static string GetAuthorizedUserId(this HubCallerContext context)
+        {
+            var userId = context.User?.Claims
+                .FirstOrDefault(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+            if (userId == null) throw new UnauthorisedException();
 
             return userId;
         }
-        catch (Exception)
-        {
-            throw new UnauthorisedException();
-        }
-    }
-
-    public static string GetAuthorizedUserId(this HubCallerContext context)
-    {
-        var userId = context.User?.Claims
-            .FirstOrDefault(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
-            ?.Value;
-        if (userId == null) throw new UnauthorisedException();
-
-        return userId;
     }
 }

@@ -1,31 +1,34 @@
+using System;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 
-namespace fugdj.Integration;
-
-public interface IDataSourceClient
+namespace fugdj.Integration
 {
-    public IMongoCollection<T> GetCollection<T>(string collectionName);
-}
-
-public class DataSourceClient : IDataSourceClient
-{
-    private readonly MongoClient _dbClient;
-
-    public DataSourceClient(IConfiguration configuration)
+    public interface IDataSourceClient
     {
-        _dbClient = new MongoClient(configuration.GetConnectionString("MongoDb"));
+        public IMongoCollection<T> GetCollection<T>(string collectionName);
     }
 
-    public IMongoCollection<T> GetCollection<T>(string collectionName)
+    public class DataSourceClient : IDataSourceClient
     {
-        try
+        private readonly MongoClient _dbClient;
+
+        public DataSourceClient(IConfiguration configuration)
         {
-            return _dbClient.GetDatabase(collectionName).GetCollection<T>(collectionName);
+            _dbClient = new MongoClient(configuration.GetConnectionString("MongoDb"));
         }
-        catch(Exception e)
+
+        public IMongoCollection<T> GetCollection<T>(string collectionName)
         {
-            Console.WriteLine(e);
-            throw new InternalServerException();
+            try
+            {
+                return _dbClient.GetDatabase(collectionName).GetCollection<T>(collectionName);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+                throw new InternalServerException();
+            }
         }
     }
 }

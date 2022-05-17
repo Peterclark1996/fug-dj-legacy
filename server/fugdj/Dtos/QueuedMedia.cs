@@ -1,17 +1,19 @@
+using System;
 using fugdj.Dtos.Db;
 
-namespace fugdj.Dtos;
-
-public class QueuedMedia
+namespace fugdj.Dtos
 {
-    public readonly MediaDbDto Media;
-    public readonly string UserId;
-    public readonly DateTime TimeQueued;
-
-    public QueuedMedia(MediaDbDto media, string userId, DateTime timeQueued)
+    public class QueuedMedia
     {
-        Media = media;
-        UserId = userId;
-        TimeQueued = timeQueued;
+        public readonly MediaDbDto Media;
+        public readonly string UserId;
+        public readonly DateTime TimeQueued;
+
+        public QueuedMedia(MediaDbDto media, string userId, DateTime timeQueued)
+        {
+            Media = media;
+            UserId = userId;
+            TimeQueued = timeQueued;
+        }
     }
 }

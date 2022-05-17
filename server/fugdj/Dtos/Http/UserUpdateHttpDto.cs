@@ -1,11 +1,12 @@
-﻿namespace fugdj.Dtos.Http;
-
-public class UserUpdateHttpDto
+﻿namespace fugdj.Dtos.Http
 {
-    public string Name { get; }
-
-    public UserUpdateHttpDto(string name)
+    public class UserUpdateHttpDto
     {
-        Name = name;
+        public string Name { get; }
+
+        public UserUpdateHttpDto(string name)
+        {
+            Name = name;
+        }
     }
 }

@@ -1,29 +1,32 @@
+using System;
+using System.Linq;
 using fugdj.Dtos.Http;
 
-namespace fugdj.Extensions;
-
-public static class MediaExtensions
+namespace fugdj.Extensions
 {
-    public static string GetMediaHashCodeAsString(this MediaHashCodeHttpDto media)
+    public static class MediaExtensions
     {
-        return media.Player switch
+        public static string GetMediaHashCodeAsString(this MediaHashCodeHttpDto media)
         {
-            Player.Youtube => $"y{media.Code}",
-            _ => throw new ArgumentOutOfRangeException($"Player type not recognised: {media.Player}")
-        };
-    }
+            return media.Player switch
+            {
+                Player.Youtube => $"y{media.Code}",
+                _ => throw new ArgumentOutOfRangeException($"Player type not recognised: {media.Player}")
+            };
+        }
 
-    public static MediaHashCodeHttpDto GetMediaHashCodeAsObject(this string hashCode) =>
-        new(hashCode.GetPlayer(), hashCode.GetCode());
+        public static MediaHashCodeHttpDto GetMediaHashCodeAsObject(this string hashCode) =>
+            new(hashCode.GetPlayer(), hashCode.GetCode());
 
-    public static Player GetPlayer(this string hashCode)
-    {
-        return hashCode.First() switch
+        public static Player GetPlayer(this string hashCode)
         {
-            'y' => Player.Youtube,
-            _ => throw new ArgumentOutOfRangeException($"Player type letter not recognised: {hashCode.First()}")
-        };
-    }
+            return hashCode.First() switch
+            {
+                'y' => Player.Youtube,
+                _ => throw new ArgumentOutOfRangeException($"Player type letter not recognised: {hashCode.First()}")
+            };
+        }
 
-    public static string GetCode(this string hashCode) => hashCode[1..];
+        public static string GetCode(this string hashCode) => hashCode[1..];
+    }
 }

@@ -1,15 +1,18 @@
-﻿namespace fugdj.Dtos.Db;
+﻿using System.Collections.Generic;
 
-public class MediaUpdateDbDto
+namespace fugdj.Dtos.Db
 {
-    public string HashCode { get; }
-    public string Name { get; }
-    public HashSet<int> TagIds { get; }
-
-    public MediaUpdateDbDto(string hashCode, string name, HashSet<int> tagIds)
+    public class MediaUpdateDbDto
     {
-        HashCode = hashCode;
-        Name = name;
-        TagIds = tagIds;
+        public string HashCode { get; }
+        public string Name { get; }
+        public HashSet<int> TagIds { get; }
+
+        public MediaUpdateDbDto(string hashCode, string name, HashSet<int> tagIds)
+        {
+            HashCode = hashCode;
+            Name = name;
+            TagIds = tagIds;
+        }
     }
 }

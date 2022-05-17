@@ -1,14 +1,15 @@
-namespace fugdj.Dtos.Http;
-
-public class CreateMediaTagHttpDto
+namespace fugdj.Dtos.Http
 {
-    public MediaHashCodeHttpDto MediaToAddTagTo { get; }
-
-    public string TagName { get; }
-    
-    public CreateMediaTagHttpDto(MediaHashCodeHttpDto mediaToAddTagTo, string tagName)
+    public class CreateMediaTagHttpDto
     {
-        MediaToAddTagTo = mediaToAddTagTo;
-        TagName = tagName;
+        public MediaHashCodeHttpDto MediaToAddTagTo { get; }
+
+        public string TagName { get; }
+    
+        public CreateMediaTagHttpDto(MediaHashCodeHttpDto mediaToAddTagTo, string tagName)
+        {
+            MediaToAddTagTo = mediaToAddTagTo;
+            TagName = tagName;
+        }
     }
 }

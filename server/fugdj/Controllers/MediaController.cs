@@ -4,46 +4,47 @@ using fugdj.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace fugdj.Controllers;
-
-[ApiController]
-[Route("api/media/{id}")]
-public class MediaController : ControllerBase
+namespace fugdj.Controllers
 {
-    private readonly IUserService _userService;
-
-    public MediaController(IUserService userService)
+    [ApiController]
+    [Route("api/media/{id}")]
+    public class MediaController : ControllerBase
     {
-        _userService = userService;
-    }
+        private readonly IUserService _userService;
 
-    [HttpPost]
-    [Authorize]
-    public IActionResult CreateMedia(string id)
-    {
-        var userId = Request.GetAuthorizedUserId();
-        var mediaId = id.GetMediaHashCodeAsObject();
-        _userService.AddMediaForUser(userId, mediaId);
-        return Ok();
-    }
+        public MediaController(IUserService userService)
+        {
+            _userService = userService;
+        }
 
-    [HttpPatch]
-    [Authorize]
-    public IActionResult UpdateMedia([FromBody] MediaUpdateHttpDto mediaToUpdate, string id)
-    {
-        var userId = Request.GetAuthorizedUserId();
-        var mediaId = id.GetMediaHashCodeAsObject();
-        _userService.UpdateMediaForUser(userId, mediaToUpdate, mediaId);
-        return Ok();
-    }
+        [HttpPost]
+        [Authorize]
+        public IActionResult CreateMedia(string id)
+        {
+            var userId = Request.GetAuthorizedUserId();
+            var mediaId = id.GetMediaHashCodeAsObject();
+            _userService.AddMediaForUser(userId, mediaId);
+            return Ok();
+        }
+
+        [HttpPatch]
+        [Authorize]
+        public IActionResult UpdateMedia([FromBody] MediaUpdateHttpDto mediaToUpdate, string id)
+        {
+            var userId = Request.GetAuthorizedUserId();
+            var mediaId = id.GetMediaHashCodeAsObject();
+            _userService.UpdateMediaForUser(userId, mediaToUpdate, mediaId);
+            return Ok();
+        }
     
-    [HttpDelete]
-    [Authorize]
-    public IActionResult DeleteMedia(string id)
-    {
-        var userId = Request.GetAuthorizedUserId();
-        var mediaId = id.GetMediaHashCodeAsObject();
-        _userService.DeleteMediaForUser(userId, mediaId);
-        return Ok();
+        [HttpDelete]
+        [Authorize]
+        public IActionResult DeleteMedia(string id)
+        {
+            var userId = Request.GetAuthorizedUserId();
+            var mediaId = id.GetMediaHashCodeAsObject();
+            _userService.DeleteMediaForUser(userId, mediaId);
+            return Ok();
+        }
     }
 }

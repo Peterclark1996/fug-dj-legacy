@@ -1,4 +1,6 @@
-﻿namespace fugdj
+﻿using System;
+
+namespace fugdj
 {
     public abstract class HttpException : SystemException
     {

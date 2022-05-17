@@ -1,13 +1,16 @@
-﻿namespace fugdj.Dtos.Http;
+﻿using System.Collections.Generic;
 
-public class MediaUpdateHttpDto
+namespace fugdj.Dtos.Http
 {
-    public string Name { get; }
-    public List<int> Tags { get; }
-
-    public MediaUpdateHttpDto(string name, List<int> tags)
+    public class MediaUpdateHttpDto
     {
-        Name = name;
-        Tags = tags;
+        public string Name { get; }
+        public List<int> Tags { get; }
+
+        public MediaUpdateHttpDto(string name, List<int> tags)
+        {
+            Name = name;
+            Tags = tags;
+        }
     }
 }

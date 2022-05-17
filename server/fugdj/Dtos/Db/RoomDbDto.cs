@@ -1,13 +1,14 @@
-﻿namespace fugdj.Dtos.Db;
-
-public class RoomDbDto
+﻿namespace fugdj.Dtos.Db
 {
-    public string Id { get; }
-    public string Name { get; }
-        
-    public RoomDbDto(string id, string name)
+    public class RoomDbDto
     {
-        Id = id;
-        Name = name;
+        public string Id { get; }
+        public string Name { get; }
+        
+        public RoomDbDto(string id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
     }
 }

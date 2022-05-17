@@ -1,19 +1,22 @@
-namespace fugdj.Extensions;
+using System;
 
-public static class StringExtensions
+namespace fugdj.Extensions
 {
-    public static string EncodeToBase64(string stringToEncode)
+    public static class StringExtensions
     {
-        var encodedBytes = System.Text.Encoding.ASCII.GetBytes(stringToEncode);
-        var encodedString= Convert.ToBase64String(encodedBytes);
-        return encodedString;
+        public static string EncodeToBase64(string stringToEncode)
+        {
+            var encodedBytes = System.Text.Encoding.ASCII.GetBytes(stringToEncode);
+            var encodedString= Convert.ToBase64String(encodedBytes);
+            return encodedString;
 
-    }
+        }
     
-    public static string DecodeFromBase64(string stringToDecode)
-    {
-        var decodedBytes = Convert.FromBase64String(stringToDecode);
-        var decodedString = System.Text.Encoding.ASCII.GetString(decodedBytes);
-        return decodedString;
+        public static string DecodeFromBase64(string stringToDecode)
+        {
+            var decodedBytes = Convert.FromBase64String(stringToDecode);
+            var decodedString = System.Text.Encoding.ASCII.GetString(decodedBytes);
+            return decodedString;
+        }
     }
 }

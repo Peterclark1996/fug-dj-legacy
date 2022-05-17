@@ -1,43 +1,46 @@
-﻿using fugdj.Dtos.Db;
+﻿using System;
+using System.Collections.Generic;
+using fugdj.Dtos.Db;
 using fugdj.Integration;
 using MongoDB.Driver;
 
-namespace fugdj.Repositories;
-
-public interface IRoomRepository
+namespace fugdj.Repositories
 {
-    public IEnumerable<RoomDbDto> GetAllRooms();
-    public RoomDbDto? GetRoomData(Guid roomId);
-}
-
-public class RoomRepository : IRoomRepository
-{
-    private const string RoomCollectionName = "room-data";
-        
-    private readonly IDataSourceClient _dataSourceClient;
-
-    public RoomRepository(IDataSourceClient dataSourceClient)
+    public interface IRoomRepository
     {
-        _dataSourceClient = dataSourceClient;
-    }
-        
-    public IEnumerable<RoomDbDto> GetAllRooms()
-    {
-        var collection = _dataSourceClient.GetCollection<RoomDbDto>(RoomCollectionName);
-
-        var rooms = collection
-            .Find(Builders<RoomDbDto>.Filter.Empty)
-            .ToList();
-
-        return rooms ?? throw new NullReferenceException();
+        public IEnumerable<RoomDbDto> GetAllRooms();
+        public RoomDbDto? GetRoomData(Guid roomId);
     }
 
-    public RoomDbDto? GetRoomData(Guid roomId)
+    public class RoomRepository : IRoomRepository
     {
-        var collection = _dataSourceClient.GetCollection<RoomDbDto>(RoomCollectionName);
+        private const string RoomCollectionName = "room-data";
+        
+        private readonly IDataSourceClient _dataSourceClient;
 
-        var filter = Builders<RoomDbDto>.Filter.Eq("_id", roomId.ToString());
-        var roomData = collection.Find(filter).FirstOrDefault();
-        return roomData;
+        public RoomRepository(IDataSourceClient dataSourceClient)
+        {
+            _dataSourceClient = dataSourceClient;
+        }
+        
+        public IEnumerable<RoomDbDto> GetAllRooms()
+        {
+            var collection = _dataSourceClient.GetCollection<RoomDbDto>(RoomCollectionName);
+
+            var rooms = collection
+                .Find(Builders<RoomDbDto>.Filter.Empty)
+                .ToList();
+
+            return rooms ?? throw new NullReferenceException();
+        }
+
+        public RoomDbDto? GetRoomData(Guid roomId)
+        {
+            var collection = _dataSourceClient.GetCollection<RoomDbDto>(RoomCollectionName);
+
+            var filter = Builders<RoomDbDto>.Filter.Eq("_id", roomId.ToString());
+            var roomData = collection.Find(filter).FirstOrDefault();
+            return roomData;
+        }
     }
 }

@@ -1,22 +1,25 @@
-﻿namespace fugdj.Dtos.Http;
+﻿using System.Collections.Generic;
 
-public class MediaHttpDto
+namespace fugdj.Dtos.Http
 {
-    public string Name { get; }
-    public Player Player { get; }
-    public string Code { get; }
-    public List<int> Tags { get; }
-
-    public MediaHttpDto(string name, Player player, string code, List<int> tags)
+    public class MediaHttpDto
     {
-        Name = name;
-        Player = player;
-        Code = code;
-        Tags = tags;
-    }
-}
+        public string Name { get; }
+        public Player Player { get; }
+        public string Code { get; }
+        public List<int> Tags { get; }
 
-public enum Player
-{
-    Youtube
+        public MediaHttpDto(string name, Player player, string code, List<int> tags)
+        {
+            Name = name;
+            Player = player;
+            Code = code;
+            Tags = tags;
+        }
+    }
+
+    public enum Player
+    {
+        Youtube
+    }
 }

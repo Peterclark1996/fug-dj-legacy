@@ -1,14 +1,17 @@
-﻿namespace fugdj.Dtos.Http;
+﻿using System;
 
-public class RoomNameHttpDto
+namespace fugdj.Dtos.Http
 {
-    public Guid Id { get; }
-        
-    public string Name { get; }
-
-    public RoomNameHttpDto(Guid id, string name)
+    public class RoomNameHttpDto
     {
-        Id = id;
-        Name = name;
+        public Guid Id { get; }
+        
+        public string Name { get; }
+
+        public RoomNameHttpDto(Guid id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
     }
 }

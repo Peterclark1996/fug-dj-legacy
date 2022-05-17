@@ -1,15 +1,16 @@
-﻿namespace fugdj.Dtos.Db;
-
-public class TagDbDto
+﻿namespace fugdj.Dtos.Db
 {
-    public int Id { get; }
-    public string Name { get; }
-    public string ColourHex { get; }
-        
-    public TagDbDto(int id, string name, string colourHex)
+    public class TagDbDto
     {
-        Id = id;
-        Name = name;
-        ColourHex = colourHex;
+        public int Id { get; }
+        public string Name { get; }
+        public string ColourHex { get; }
+        
+        public TagDbDto(int id, string name, string colourHex)
+        {
+            Id = id;
+            Name = name;
+            ColourHex = colourHex;
+        }
     }
 }

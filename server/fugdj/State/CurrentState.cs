@@ -1,17 +1,20 @@
-﻿using fugdj.Dtos.Db;
+﻿using System;
+using System.Collections.Generic;
+using fugdj.Dtos.Db;
 
-namespace fugdj.State;
-
-public static class CurrentState
+namespace fugdj.State
 {
-    private static readonly Dictionary<Guid, RoomState> RoomStates = new();
-        
-    public static RoomState GetCurrentRoomState(Guid roomId, Func<RoomDbDto> getRoomData)
+    public static class CurrentState
     {
-        if (RoomStates.ContainsKey(roomId)) return RoomStates[roomId];
+        private static readonly Dictionary<Guid, RoomState> RoomStates = new();
+        
+        public static RoomState GetCurrentRoomState(Guid roomId, Func<RoomDbDto> getRoomData)
+        {
+            if (RoomStates.ContainsKey(roomId)) return RoomStates[roomId];
 
-        var roomEntity = getRoomData();
-        RoomStates[roomId] = new RoomState(Guid.Parse(roomEntity.Id), roomEntity.Name);
-        return RoomStates[roomId];
+            var roomEntity = getRoomData();
+            RoomStates[roomId] = new RoomState(Guid.Parse(roomEntity.Id), roomEntity.Name);
+            return RoomStates[roomId];
+        }
     }
 }

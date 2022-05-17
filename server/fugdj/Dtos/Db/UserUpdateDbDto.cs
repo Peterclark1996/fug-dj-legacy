@@ -1,11 +1,12 @@
-namespace fugdj.Dtos.Db;
-
-public class UserUpdateDbDto
+namespace fugdj.Dtos.Db
 {
-    public string Name { get; }
-    
-    public UserUpdateDbDto(string name)
+    public class UserUpdateDbDto
     {
-        Name = name;
+        public string Name { get; }
+    
+        public UserUpdateDbDto(string name)
+        {
+            Name = name;
+        }
     }
 }
