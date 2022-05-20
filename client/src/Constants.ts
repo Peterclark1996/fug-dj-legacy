@@ -1,6 +1,7 @@
 import PlayerEnum from "./Enums/PlayerEnum"
 
 export enum Endpoint {
+    USER = "user",
     GET_USER = "user/get",
     GET_ALL_ROOMS = "rooms/getall",
     POST_CREATE_MEDIA_TAG = "user/createmediatag"

@@ -9,14 +9,13 @@ type UserActionsProps = {
 }
 
 const UserActions = ({ dispatch }: UserActionsProps) => {
-    const { user, logout } = useAuth0()
+    const { logout } = useAuth0()
 
     const onProfileClick = () => dispatch({ type: ActionType.SELECTED_PAGE_UPDATED, updatedPage: PageEnum.Profile })
     const onLibraryClick = () => dispatch({ type: ActionType.SELECTED_PAGE_UPDATED, updatedPage: PageEnum.Library })
 
     return (
         <div className={`d-flex flex-column justify-content-center p-2 ${classes.background} ${classes.shadow}`}>
-            {user && <h4 className="text-center">{user.given_name}</h4>}
             <StandardButton className="m-2" iconClasses="fa-solid fa-user-large py-2" toolTipText="Profile" size={ButtonSize.LARGE} onClick={onProfileClick} />
             <StandardButton className="m-2" iconClasses="fa-solid fa-list py-2" toolTipText="Library" size={ButtonSize.LARGE} onClick={onLibraryClick} />
             <StandardButton className="m-2" iconClasses="fa-solid fa-door-open py-2" toolTipText="Logout" size={ButtonSize.LARGE} onClick={() => logout({ returnTo: window.location.origin })} />
