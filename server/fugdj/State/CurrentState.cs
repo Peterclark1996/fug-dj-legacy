@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using fugdj.Dtos.Db;
 
 namespace fugdj.State
@@ -7,6 +8,8 @@ namespace fugdj.State
     public static class CurrentState
     {
         private static readonly Dictionary<Guid, RoomState> RoomStates = new();
+
+        public static List<RoomState> GetAllActiveRoomStates() => RoomStates.Values.ToList();
         
         public static RoomState GetCurrentRoomState(Guid roomId, Func<RoomDbDto> getRoomData)
         {

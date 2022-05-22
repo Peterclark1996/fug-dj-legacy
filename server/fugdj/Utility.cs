@@ -12,5 +12,11 @@ namespace fugdj
             var b = rnd.Next(100, 201);
             return $"{r:X2}{g:X2}{b:X2}";
         }
+
+        public static int RandomNumberBetween(int lowestValue, int highestValue)
+        {
+            var rnd = new Random();
+            return rnd.Next(lowestValue, highestValue);
+        }
     }
 }

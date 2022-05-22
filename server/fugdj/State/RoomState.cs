@@ -14,9 +14,10 @@ namespace fugdj.State
         public readonly Guid Id;
         public readonly string Name;
 
-        public QueuedMedia? CurrentlyPlaying;
-        public DateTime? StartedPlayingAt;
-
+        private readonly List<ConnectedUserHubDto> _connectedUsers = new();
+        
+        private QueuedMedia? _currentlyPlaying;
+        private DateTime? _startedPlayingAt;
         private readonly List<QueuedMedia> _mediaInQueue = new();
         private Thread? _playNextInQueueThread;
 
@@ -25,6 +26,16 @@ namespace fugdj.State
             Id = id;
             Name = name;
         }
+
+        public void AddUser(ConnectedUserHubDto user)
+        {
+            RemoveUser(user.Id);
+            _connectedUsers.Add(user);
+        }
+        
+        public void RemoveUser(string userId) => _connectedUsers.RemoveAll(u => u.Id == userId);
+
+        public IEnumerable<ConnectedUserHubDto> GetUsers() => _connectedUsers;
 
         public void QueueMedia(MediaDbDto media, string userId, Action<NextMediaHubDto> playMediaToRoomF)
         {
@@ -42,10 +53,10 @@ namespace fugdj.State
         private void TryPlayNextInQueue(Action<NextMediaHubDto> playMediaToRoomF)
         {
             MediaBeingPlayedHttpDto? mediaJustPlayed = null;
-            if (CurrentlyPlaying != null)
+            if (_currentlyPlaying != null)
             {
-                mediaJustPlayed = new MediaBeingPlayedHttpDto(CurrentlyPlaying.Media.Name, CurrentlyPlaying.Media.Player,
-                    CurrentlyPlaying.Media.Code, CurrentlyPlaying.UserId);
+                mediaJustPlayed = new MediaBeingPlayedHttpDto(_currentlyPlaying.Media.Name, _currentlyPlaying.Media.Player,
+                    _currentlyPlaying.Media.Code, _currentlyPlaying.UserId);
             }
         
             if (!_mediaInQueue.Any())
@@ -54,35 +65,35 @@ namespace fugdj.State
                 {
                     playMediaToRoomF.Invoke(new NextMediaHubDto(mediaJustPlayed, null));
                 }
-                CurrentlyPlaying = null;
-                StartedPlayingAt = null;
+                _currentlyPlaying = null;
+                _startedPlayingAt = null;
                 return;
             }
 
             if (!HasCurrentMediaFinishedPlaying()) return;
 
-            CurrentlyPlaying = _mediaInQueue.OrderBy(m => m.TimeQueued).First();
-            _mediaInQueue.Remove(CurrentlyPlaying);
+            _currentlyPlaying = _mediaInQueue.OrderBy(m => m.TimeQueued).First();
+            _mediaInQueue.Remove(_currentlyPlaying);
 
             _playNextInQueueThread = new Thread(() =>
             {
-                Thread.Sleep(TimeSpan.FromSeconds(CurrentlyPlaying.Media.DurationSeconds));
+                Thread.Sleep(TimeSpan.FromSeconds(_currentlyPlaying.Media.DurationSeconds));
                 TryPlayNextInQueue(playMediaToRoomF);
             });
         
-            StartedPlayingAt = DateTime.UtcNow;
+            _startedPlayingAt = DateTime.UtcNow;
             _playNextInQueueThread.Start();
 
-            var mediaToPlay = new MediaBeingPlayedHttpDto(CurrentlyPlaying.Media.Name, CurrentlyPlaying.Media.Player,
-                CurrentlyPlaying.Media.Code, CurrentlyPlaying.UserId);
+            var mediaToPlay = new MediaBeingPlayedHttpDto(_currentlyPlaying.Media.Name, _currentlyPlaying.Media.Player,
+                _currentlyPlaying.Media.Code, _currentlyPlaying.UserId);
             playMediaToRoomF.Invoke(new NextMediaHubDto(mediaJustPlayed, mediaToPlay));
         }
 
         private bool HasCurrentMediaFinishedPlaying()
         {
-            if (CurrentlyPlaying == null || StartedPlayingAt == null) return true;
+            if (_currentlyPlaying == null || _startedPlayingAt == null) return true;
 
-            return StartedPlayingAt + TimeSpan.FromSeconds(CurrentlyPlaying.Media.DurationSeconds) < DateTime.UtcNow;
+            return _startedPlayingAt + TimeSpan.FromSeconds(_currentlyPlaying.Media.DurationSeconds) < DateTime.UtcNow;
         }
     }
 }

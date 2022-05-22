@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using fugdj.Dtos.Db;
 using fugdj.Dtos.Http;
@@ -24,11 +25,12 @@ namespace fugdj.tests
             var room = new RoomDbDto(roomId.ToString(), Common.UniqueString());
             var hashCode = $"y{Common.UniqueString()}";
             var media = new MediaWithTagsDbDto(new MediaDbDto(hashCode, "", 10), new List<int>());
-            var user = new UserDbDto(Common.UniqueString(), "", new List<TagDbDto>(), new List<MediaWithTagsDbDto> {media});
+            var user = new UserDbDto(Common.UniqueString(), "", new List<TagDbDto>(),
+                new List<MediaWithTagsDbDto> {media});
 
             MediaBeingPlayedHttpDto? mediaPlayed = null;
 
-            var roomHub = BuildRoomHub(room, user, mediaChange => { mediaPlayed = mediaChange.UpNext; });
+            var roomHub = BuildRoomHub(room, user, mediaChange => { mediaPlayed = mediaChange.UpNext; }, _ => { });
 
             roomHub.JoinRoom(roomId);
             roomHub.QueueMedia(roomId, media.Media.Player, media.Media.Code);
@@ -57,10 +59,10 @@ namespace fugdj.tests
             MediaBeingPlayedHttpDto? mediaPlayed = null;
 
             var firstRoomHubConnection =
-                BuildRoomHub(room, firstUser, mediaChange => { mediaPlayed = mediaChange.UpNext; });
+                BuildRoomHub(room, firstUser, mediaChange => { mediaPlayed = mediaChange.UpNext; }, _ => { });
 
             var secondRoomHubConnection =
-                BuildRoomHub(room, secondUser, mediaChange => { mediaPlayed = mediaChange.UpNext; });
+                BuildRoomHub(room, secondUser, mediaChange => { mediaPlayed = mediaChange.UpNext; }, _ => { });
 
             firstRoomHubConnection.JoinRoom(roomId);
             secondRoomHubConnection.JoinRoom(roomId);
@@ -98,10 +100,10 @@ namespace fugdj.tests
             MediaBeingPlayedHttpDto? mediaPlayed = null;
 
             var firstRoomHubConnection =
-                BuildRoomHub(room, firstUser, mediaChange => { mediaPlayed = mediaChange.UpNext; });
+                BuildRoomHub(room, firstUser, mediaChange => { mediaPlayed = mediaChange.UpNext; }, _ => { });
 
             var secondRoomHubConnection =
-                BuildRoomHub(room, secondUser, mediaChange => { mediaPlayed = mediaChange.UpNext; });
+                BuildRoomHub(room, secondUser, mediaChange => { mediaPlayed = mediaChange.UpNext; }, _ => { });
 
             firstRoomHubConnection.JoinRoom(roomId);
             secondRoomHubConnection.JoinRoom(roomId);
@@ -128,14 +130,13 @@ namespace fugdj.tests
             var room = new RoomDbDto(roomId.ToString(), Common.UniqueString());
             var hashCode = $"y{Common.UniqueString()}";
             var media = new MediaWithTagsDbDto(new MediaDbDto(hashCode, "", 1), new List<int>());
-            var user = new UserDbDto(Common.UniqueString(), "", new List<TagDbDto>(), new List<MediaWithTagsDbDto> {media});
+            var user = new UserDbDto(Common.UniqueString(), "", new List<TagDbDto>(),
+                new List<MediaWithTagsDbDto> {media});
 
             MediaBeingPlayedHttpDto? mediaFinishedBeingPlayed = null;
 
-            var roomHub = BuildRoomHub(room, user, mediaChange =>
-            {
-                mediaFinishedBeingPlayed = mediaChange.JustPlayed;
-            });
+            var roomHub = BuildRoomHub(room, user,
+                mediaChange => { mediaFinishedBeingPlayed = mediaChange.JustPlayed; }, _ => { });
 
             roomHub.JoinRoom(roomId);
             roomHub.QueueMedia(roomId, media.Media.Player, media.Media.Code);
@@ -148,7 +149,7 @@ namespace fugdj.tests
             mediaFinishedBeingPlayed.Code.ShouldBe(media.Media.Code);
             mediaFinishedBeingPlayed.Player.ShouldBe(media.Media.Player);
         }
-    
+
         [Fact]
         public void WhenMediaFinishes_AndAnotherMediaIsInTheQueue_NextMediaIsSentToRoomMembersWithJustPlayedAndUpNext()
         {
@@ -168,10 +169,10 @@ namespace fugdj.tests
             NextMediaHubDto? mediaPlayed = null;
 
             var firstRoomHubConnection =
-                BuildRoomHub(room, firstUser, mediaChange => { mediaPlayed = mediaChange; });
+                BuildRoomHub(room, firstUser, mediaChange => { mediaPlayed = mediaChange; }, _ => { });
 
             var secondRoomHubConnection =
-                BuildRoomHub(room, secondUser, mediaChange => { mediaPlayed = mediaChange; });
+                BuildRoomHub(room, secondUser, mediaChange => { mediaPlayed = mediaChange; }, _ => { });
 
             firstRoomHubConnection.JoinRoom(roomId);
             secondRoomHubConnection.JoinRoom(roomId);
@@ -180,9 +181,9 @@ namespace fugdj.tests
             secondRoomHubConnection.QueueMedia(roomId, secondUsersMedia.Media.Player, secondUsersMedia.Media.Code);
 
             Thread.Sleep(TimeSpan.FromSeconds(3));
-        
+
             mediaPlayed.ShouldNotBeNull();
-        
+
             mediaPlayed.JustPlayed.ShouldNotBeNull();
             mediaPlayed.JustPlayed.Code.ShouldBe(firstUsersMedia.Media.Code);
             mediaPlayed.JustPlayed.Player.ShouldBe(firstUsersMedia.Media.Player);
@@ -192,7 +193,47 @@ namespace fugdj.tests
             mediaPlayed.UpNext.Player.ShouldBe(secondUsersMedia.Media.Player);
         }
 
-        private static RoomHub BuildRoomHub(RoomDbDto room, UserDbDto user, Action<NextMediaHubDto> onNextMedia)
+        [Fact]
+        public void WhenUserJoinsRoom_OnlyUserInRoomGetsUpdateRoomUsersMessage()
+        {
+            var roomId = Guid.NewGuid();
+            var room = new RoomDbDto(roomId.ToString(), Common.UniqueString());
+
+            var firstUser = new UserDbDto(
+                Common.UniqueString(), "", new List<TagDbDto>(), new List<MediaWithTagsDbDto>()
+            );
+            var secondUser = new UserDbDto(
+                Common.UniqueString(), "", new List<TagDbDto>(), new List<MediaWithTagsDbDto>()
+            );
+
+            List<ConnectedUserHubDto>? firstConnectionsUsers = null;
+            List<ConnectedUserHubDto>? secondConnectionsUsers = null;
+
+            var firstRoomHubConnection = BuildRoomHub(
+                room,
+                firstUser,
+                _ => { },
+                updatedUsers => { firstConnectionsUsers = updatedUsers; }
+            );
+            var secondRoomHubConnection = BuildRoomHub(
+                room,
+                secondUser,
+                _ => { },
+                updatedUsers => { secondConnectionsUsers = updatedUsers; }
+            );
+
+            firstRoomHubConnection.JoinRoom(roomId);
+            
+            firstConnectionsUsers.ShouldHaveSingleItem().Id.ShouldBe(firstUser.Id);
+            secondConnectionsUsers.ShouldBeNull();
+        }
+
+        private static RoomHub BuildRoomHub(
+            RoomDbDto room,
+            UserDbDto user,
+            Action<NextMediaHubDto> onNextMedia,
+            Action<List<ConnectedUserHubDto>> onUpdateRoomUsers
+        )
         {
             var roomRepo = new Mock<IRoomRepository>();
             roomRepo.Setup(r => r.GetRoomData(Guid.Parse(room.Id))).Returns(room);
@@ -203,13 +244,18 @@ namespace fugdj.tests
             var mockReceivingRoomHub = new Mock<IRoomHub>();
             mockReceivingRoomHub.Setup(r => r.NextMedia(It.IsAny<NextMediaHubDto>()))
                 .Callback(onNextMedia);
+            mockReceivingRoomHub.Setup(r => r.UpdateRoomUsers(It.IsAny<List<ConnectedUserHubDto>>()))
+                .Callback(onUpdateRoomUsers);
             var mockClients = new Mock<IHubCallerClients<IRoomHub>>();
             mockClients.Setup(clients => clients.Group(room.Id)).Returns(mockReceivingRoomHub.Object);
 
+            var mockGroups = new Mock<IGroupManager>();
+            
             return new RoomHub(roomService, userRepo.Object)
             {
                 Context = Common.HubContextWithAuthorizedUser(user.Id),
-                Clients = mockClients.Object
+                Clients = mockClients.Object,
+                Groups = mockGroups.Object
             };
         }
     }
