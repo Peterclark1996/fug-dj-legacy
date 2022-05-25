@@ -1,7 +1,7 @@
 import Player from "../../Components/Player"
 import { useMediaQueue } from "../../Hooks/MediaQueueProvider"
 import { useRoomHub } from "../../Hooks/RoomHubProvider"
-import classes from "./Stage.module.scss"
+import Character from "./Character"
 
 const Stage = () => {
     const { currentlyPlaying } = useMediaQueue()
@@ -10,9 +10,12 @@ const Stage = () => {
     console.log("connectedUsers", connectedUsers)
 
     return (
-        <div className={`d-flex ${classes.stretch}`}>
+        <div className="d-flex flex-grow-1 m-4 h-100">
             {
                 currentlyPlaying && <Player currentlyPlaying={currentlyPlaying} />
+            }
+            {
+                connectedUsers.map(user => <Character user={user} />)
             }
         </div>
     )

@@ -215,7 +215,7 @@ namespace fugdj.tests
                 _ => { },
                 updatedUsers => { firstConnectionsUsers = updatedUsers; }
             );
-            var secondRoomHubConnection = BuildRoomHub(
+            BuildRoomHub(
                 room,
                 secondUser,
                 _ => { },

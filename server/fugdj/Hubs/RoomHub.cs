@@ -57,23 +57,26 @@ namespace fugdj.Hubs
             CurrentState.GetAllActiveRoomStates().ForEach(r => r.RemoveUser(userId));
 
             var user = _userRepository.GetUser(userId);
-            if (user == null)
-            {
-                return;
-            }
+            if (user == null) throw new ResourceNotFoundException();
 
             var currentRoom = _roomService.GetCurrentRoomState(roomId);
-            currentRoom.AddUser(
+            currentRoom.AddOrUpdateUser(
                 new ConnectedUserHubDto(
                     userId,
                     user.Name,
-                    Utility.RandomNumberBetween(5, 95),
-                    Utility.RandomNumberBetween(5, 95)
+                    Utility.RandomNumberBetween(10, 90),
+                    Utility.RandomNumberBetween(10, 90)
                 )
             );
 
             await Groups.AddToGroupAsync(Context.ConnectionId, roomId.ToString());
 
+            await BroadcastUpdatedRoomUsers(roomId);
+        }
+
+        public async Task BroadcastUpdatedRoomUsers(Guid roomId)
+        {
+            var currentRoom = _roomService.GetCurrentRoomState(roomId);
             await Clients.Group(roomId.ToString()).UpdateRoomUsers(currentRoom.GetUsers().ToList());
         }
 

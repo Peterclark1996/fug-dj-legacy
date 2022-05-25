@@ -10,6 +10,9 @@ namespace fugdj.State
         private static readonly Dictionary<Guid, RoomState> RoomStates = new();
 
         public static List<RoomState> GetAllActiveRoomStates() => RoomStates.Values.ToList();
+
+        public static RoomState? GetRoomWithConnectedUser(string userId) =>
+            RoomStates.Values.FirstOrDefault(r => r.GetUsers().Any(u => u.Id == userId));
         
         public static RoomState GetCurrentRoomState(Guid roomId, Func<RoomDbDto> getRoomData)
         {

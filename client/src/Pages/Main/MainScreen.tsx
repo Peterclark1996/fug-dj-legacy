@@ -38,7 +38,9 @@ const MainScreen = ({ state, dispatch }: MainScreenProps) => {
                     <RoomList />
                     <UserActions dispatch={dispatch} />
                 </div>
-                <Stage />
+                <div className={`d-flex flex-column ${classes.stretch}`}>
+                    <Stage />
+                </div>
                 <MediaQueue />
             </div>
             {

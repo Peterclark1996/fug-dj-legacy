@@ -27,7 +27,7 @@ namespace fugdj.State
             Name = name;
         }
 
-        public void AddUser(ConnectedUserHubDto user)
+        public void AddOrUpdateUser(ConnectedUserHubDto user)
         {
             RemoveUser(user.Id);
             _connectedUsers.Add(user);

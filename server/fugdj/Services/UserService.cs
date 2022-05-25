@@ -2,9 +2,12 @@
 using System.Linq;
 using fugdj.Dtos.Db;
 using fugdj.Dtos.Http;
+using fugdj.Dtos.Hub;
 using fugdj.Extensions;
+using fugdj.Hubs;
 using fugdj.Integration;
 using fugdj.Repositories;
+using fugdj.State;
 
 namespace fugdj.Services
 {
@@ -28,17 +31,17 @@ namespace fugdj.Services
             _userRepository = userRepository;
             _youtubeClient = youtubeClient;
         }
-    
+
         public UserHttpDto GetUser(string userId)
         {
             var user = _userRepository.GetUser(userId);
-            if(user == null) throw new ResourceNotFoundException("User does not exist");
+            if (user == null) throw new ResourceNotFoundException("User does not exist");
 
-            var userTags = user.TagList.Select(t => 
+            var userTags = user.TagList.Select(t =>
                 new TagHttpDto(t.Id, t.Name, t.ColourHex)
             ).ToList();
 
-            var userMedia = user.MediaList.Select(m => 
+            var userMedia = user.MediaList.Select(m =>
                 new MediaHttpDto(m.Media.Name, Player.Youtube, m.Media.HashCode[1..], m.TagIds)
             ).ToList();
 
@@ -58,31 +61,46 @@ namespace fugdj.Services
             //TODO Only pull back single media and tags
             var user = _userRepository.GetUser(userId);
             if (user == null) throw new ResourceNotFoundException();
-        
+
             var newTag = new TagDbDto(user.GetUnusedTagId(), tagName, Utility.RandomHexColour());
 
             var existingMedia =
                 user.MediaList.SingleOrDefault(m => m.Media.HashCode == mediaToAddTagTo.GetMediaHashCodeAsString());
-            if(existingMedia == null) throw new ResourceNotFoundException();
+            if (existingMedia == null) throw new ResourceNotFoundException();
 
             var updatedTagList = new HashSet<int>();
             existingMedia.TagIds.ForEach(t => updatedTagList.Add(t));
             updatedTagList.Add(newTag.Id);
-        
-            var mediaUpdate = new MediaUpdateDbDto(existingMedia.Media.HashCode, existingMedia.Media.Name, updatedTagList);
-        
+
+            var mediaUpdate =
+                new MediaUpdateDbDto(existingMedia.Media.HashCode, existingMedia.Media.Name, updatedTagList);
+
             _userRepository.CreateTagForMedia(userId, mediaUpdate, newTag);
         }
 
         public void UpdateMediaForUser(string userId, MediaUpdateHttpDto mediaUpdate, MediaHashCodeHttpDto mediaId)
         {
             var hashCode = new MediaHashCodeHttpDto(mediaId.Player, mediaId.Code).GetMediaHashCodeAsString();
-            _userRepository.UpdateMediaForUser(userId, new MediaUpdateDbDto(hashCode, mediaUpdate.Name, new HashSet<int>(mediaUpdate.Tags)));
+            _userRepository.UpdateMediaForUser(userId,
+                new MediaUpdateDbDto(hashCode, mediaUpdate.Name, new HashSet<int>(mediaUpdate.Tags)));
         }
 
         public void UpdateUser(string userId, UserUpdateHttpDto userUpdate)
         {
             _userRepository.UpdateUser(userId, new UserUpdateDbDto(userUpdate.Name));
+
+            var usersCurrentRoom = CurrentState.GetRoomWithConnectedUser(userId);
+            if (usersCurrentRoom == null) return;
+
+            var user = _userRepository.GetUser(userId);
+            if (user == null) throw new ResourceNotFoundException();
+
+            var currentUserInRoom = usersCurrentRoom.GetUsers().Single(u => u.Id == userId);
+            usersCurrentRoom.AddOrUpdateUser(
+                new ConnectedUserHubDto(userId, user.Name, currentUserInRoom.X, currentUserInRoom.Y)
+            );
+
+            //TODO Broadcast to all users in this room now that a user has been updated
         }
 
         public void DeleteMediaForUser(string userId, MediaHashCodeHttpDto mediaId)
