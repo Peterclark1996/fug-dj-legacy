@@ -11,7 +11,7 @@ const getApiUrl = () => {
 }
 
 interface ApiContextInterface {
-    apiGet: (url: string) => Promise<unknown>,
+    apiGet: <Type>(url: string) => Promise<Type>,
     apiPost: (url: string, data?: unknown | undefined) => Promise<unknown>,
     apiPut: (url: string, data: unknown) => Promise<unknown>,
     apiPatch: (url: string, data: unknown) => Promise<unknown>,
@@ -19,11 +19,11 @@ interface ApiContextInterface {
 }
 
 const ApiContext = createContext<ApiContextInterface>({
-    apiGet: () => Promise.resolve({}),
-    apiPost: () => Promise.resolve({}),
-    apiPut: () => Promise.resolve({}),
-    apiPatch: () => Promise.resolve({}),
-    apiDelete: () => Promise.resolve({})
+    apiGet: (): Promise<any> => Promise.resolve(),
+    apiPost: () => Promise.resolve(),
+    apiPut: () => Promise.resolve(),
+    apiPatch: () => Promise.resolve(),
+    apiDelete: () => Promise.resolve()
 })
 
 export const ApiProvider = (props: React.PropsWithChildren<unknown>) => {

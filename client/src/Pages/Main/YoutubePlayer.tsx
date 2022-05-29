@@ -10,11 +10,9 @@ const YoutubePlayer = ({ videoCode }: YoutubePlayerProps) => {
         width: '640',
         playerVars: {
             autoplay: 1,
-            allowfullscreen: 0,
             controls: 0,
             disablekb: 1,
             modestbranding: 1,
-            showinfo: 0,
             fs: 0,
             start: 0
         },

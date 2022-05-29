@@ -22,7 +22,7 @@ type MainScreenProps = {
 
 const MainScreen = ({ state, dispatch }: MainScreenProps) => {
     const { apiGet } = useApi()
-    const { data: userData } = useQuery<UserData, Error>(Resource.USER, () => apiGet(Endpoint.GET_USER))
+    const { data: userData } = useQuery<UserData, Error>(Resource.USER, (): Promise<UserData> => apiGet(Endpoint.GET_USER))
 
     useEffect(() => {
         if (userData) {

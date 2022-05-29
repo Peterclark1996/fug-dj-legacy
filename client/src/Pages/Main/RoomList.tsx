@@ -10,7 +10,7 @@ import classes from './RoomList.module.scss'
 const RoomList = () => {
     const { connectedRoomId, connectToRoom } = useRoomHub()
     const { apiGet } = useApi()
-    const { isLoading, error, data: rooms } = useQuery<RoomData[], Error>(Resource.ROOMS, () => apiGet(Endpoint.GET_ALL_ROOMS))
+    const { isLoading, error, data: rooms } = useQuery<RoomData[], Error>(Resource.ROOMS, (): Promise<RoomData[]> => apiGet(Endpoint.GET_ALL_ROOMS))
 
     const onRoomButtonClick = (roomId: string) => {
         connectToRoom(roomId)
