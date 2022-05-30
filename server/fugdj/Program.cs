@@ -72,6 +72,9 @@ app.UseRouting();
 
 app.UseCors(corsDomainPolicy);
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
