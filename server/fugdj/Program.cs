@@ -10,14 +10,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 const string corsDomainPolicy = "CorsDomainPolicy";
-
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddControllers();
 builder.Services.AddControllers(options => options.Filters.Add(new HttpExceptionFilter()));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -42,7 +39,6 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
 builder.Services.AddScoped<IDataSourceClient, DataSourceClient>();
 builder.Services.AddScoped<IYoutubeClient, YoutubeClient>();
 
@@ -50,43 +46,44 @@ builder.Services.AddHttpClient();
 builder.Services.AddSignalR();
 
 var app = builder.Build();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
-    
+
     app.UseCors(corsPolicyBuilder =>
     {
         corsPolicyBuilder.WithOrigins("http://localhost:3000")
-            .AllowAnyHeader()
             .WithMethods("GET", "POST", "DELETE", "PUT", "PATCH")
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+}
+if (app.Environment.IsProduction())
+{
+    app.UseCors(corsPolicyBuilder =>
+    {
+        corsPolicyBuilder.WithOrigins("https://fug-dj.herokuapp.com")
+            .WithMethods("GET", "POST", "DELETE", "PUT", "PATCH")
+            .AllowAnyHeader()
             .AllowCredentials();
     });
 }
 
 app.UseHttpsRedirection();
-
 app.UseRouting();
-
 app.UseCors(corsDomainPolicy);
-
 app.UseDefaultFiles();
 app.UseStaticFiles();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute(
         "default",
         "{controller}/{action=Index}/{id?}");
 });
-
 app.MapControllers();
-
 app.MapHub<RoomHub>("/hub/room");
-
 app.Run();
