@@ -1,3 +1,10 @@
+FROM node:13.12.0-alpine AS client
+COPY /client /app
+
+WORKDIR /app
+RUN npm install
+RUN npm run build
+
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
@@ -17,4 +24,5 @@ RUN dotnet publish "server/fugdj/fugdj.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY --from=client /app/dist/* /app/wwwroot/
 CMD ASPNETCORE_URLS=http://*:$PORT dotnet fugdj.dll
