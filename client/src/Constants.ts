@@ -23,6 +23,11 @@ export enum Resource {
     ROOMS = "rooms"
 }
 
+export enum DomainUrl {
+    DEV = "localhost:7177",
+    PROD = "fug-dj.herokuapp.com"
+}
+
 export enum ApiUrl {
     DEV = "https://localhost:7177/api/",
     PROD = "https://fug-dj.herokuapp.com/api/"
