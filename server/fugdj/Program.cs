@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using fugdj;
 using fugdj.Hubs;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-const string corsDomainPolicy = "CorsDomainPolicy";
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddControllers(options => options.Filters.Add(new HttpExceptionFilter()));
@@ -48,6 +48,7 @@ builder.Services.AddSignalR();
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
+    Console.WriteLine("Starting in development mode");
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -62,6 +63,7 @@ if (app.Environment.IsDevelopment())
 }
 if (app.Environment.IsProduction())
 {
+    Console.WriteLine("Starting in production mode");
     app.UseCors(corsPolicyBuilder =>
     {
         corsPolicyBuilder.WithOrigins("https://fug-dj.herokuapp.com")
@@ -73,7 +75,7 @@ if (app.Environment.IsProduction())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors(corsDomainPolicy);
+app.UseCors();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseAuthentication();
