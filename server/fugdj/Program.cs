@@ -22,8 +22,8 @@ builder.Services.AddAuthentication(options =>
     })
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
-        options.Authority = builder.Configuration["Auth0:Domain"];
-        options.Audience = builder.Configuration["Auth0:Audience"];
+        options.Authority = "https://dev-vurvq0rr.us.auth0.com/";
+        options.Audience = "https://fug-dj.herokuapp.com/api";
         options.Events = new JwtBearerEvents
         {
             OnMessageReceived = context =>
