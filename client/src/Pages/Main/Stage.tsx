@@ -7,8 +7,6 @@ const Stage = () => {
     const { currentlyPlaying } = useMediaQueue()
     const { connectedUsers } = useRoomHub()
 
-    console.log("connectedUsers", connectedUsers)
-
     return (
         <div className="d-flex flex-column flex-grow-1 m-4 h-100 align-items-center">
             <Player currentlyPlaying={currentlyPlaying} />

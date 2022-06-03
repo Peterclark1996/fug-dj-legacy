@@ -1,4 +1,5 @@
 using System;
+using fugdj.Extensions;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 
@@ -15,7 +16,7 @@ namespace fugdj.Integration
 
         public DataSourceClient(IConfiguration configuration)
         {
-            _dbClient = new MongoClient(configuration.GetConnectionString("MongoDb"));
+            _dbClient = new MongoClient(configuration.GetMongoConnectionString());
         }
 
         public IMongoCollection<T> GetCollection<T>(string collectionName)
