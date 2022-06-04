@@ -20,7 +20,7 @@ namespace fugdj.Integration
         public YoutubeClient(IHttpClientFactory clientFactory, IConfiguration configuration)
         {
             _clientFactory = clientFactory;
-            _youtubeToken = configuration.GetSection("Integration")["YoutubeApiKey"];
+            _youtubeToken = configuration.GetYoutubeApiKey();
         }
 
         public YoutubeMediaInfo GetMediaInfo(string mediaCode)
